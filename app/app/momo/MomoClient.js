@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-/** MoMo control panel: in-app payments queue + manual reconciliation. */
-export default function MomoClient() {
+/** MoMo control panel: payment number (CEO-editable) + transactions queue. */
+export default function MomoClient({ role }) {
   const [rows, setRows] = useState(null);
   const [configured, setConfigured] = useState(false);
   const [error, setError] = useState("");
@@ -66,6 +66,16 @@ export default function MomoClient() {
       ) : null}
 
       <div className="panel">
+        <h2>Payment MoMo number</h2>
+        <p className="panel-note">
+          Where customer payments go. {role === "MANAGING_DIRECTOR"
+            ? "As CEO you can change this at any time — customers see the new number on their payment screens immediately."
+            : "Only the Managing Director (CEO) can change this."}
+        </p>
+        <MomoNumberEditor canEdit={role === "MANAGING_DIRECTOR"} />
+      </div>
+
+      <div className="panel">
         <h2>Transactions</h2>
         {!rows ? (
           <p className="hint">Loading…</p>
@@ -124,5 +134,112 @@ export default function MomoClient() {
         )}
       </div>
     </>
+  );
+}
+
+/** CEO sets the receiving MoMo number + payee name; others see it read-only. */
+function MomoNumberEditor({ canEdit }) {
+  const [current, setCurrent] = useState(null);
+  const [number, setNumber] = useState("");
+  const [payee, setPayee] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [msg, setMsg] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  async function loadCurrent() {
+    const res = await fetch("/api/momo-number");
+    const j = await res.json().catch(() => ({}));
+    if (res.ok) {
+      setCurrent(j);
+      setNumber(j.number || "");
+      setPayee(j.payee || "");
+    }
+  }
+
+  useEffect(() => {
+    loadCurrent();
+  }, []);
+
+  async function save(e) {
+    e.preventDefault();
+    setBusy(true);
+    setErr("");
+    setMsg("");
+    try {
+      const res = await fetch("/api/momo-number", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ number, payee }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error || "Could not save");
+      setMsg(j.message || "Saved");
+      setEditing(false);
+      loadCurrent();
+    } catch (e2) {
+      setErr(e2.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (!current) return <p className="hint">Loading…</p>;
+
+  if (!editing) {
+    return (
+      <div>
+        <p style={{ fontSize: "1.15rem", margin: "0.4rem 0" }}>
+          <b>{current.number || "Not set yet"}</b>
+          {current.payee ? <span className="hint"> · {current.payee}</span> : null}
+        </p>
+        {!current.number ? (
+          <p className="hint">No payment number on file — customers cannot be shown where to pay until this is set.</p>
+        ) : null}
+        {canEdit ? (
+          <button className="btn secondary" type="button" onClick={() => { setEditing(true); setMsg(""); }}>
+            {current.number ? "Change number" : "Set number"}
+          </button>
+        ) : null}
+        {msg ? <div className="form-ok">{msg}</div> : null}
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={save}>
+      <div className="form-grid">
+        <div className="field">
+          <label htmlFor="mn-num">MoMo number *</label>
+          <input
+            id="mn-num"
+            type="tel"
+            placeholder="024 123 4567"
+            value={number}
+            onChange={(e) => setNumber(e.target.value)}
+            required
+          />
+          <div className="hint">Stored as +233… — shown exactly like this to customers.</div>
+        </div>
+        <div className="field">
+          <label htmlFor="mn-payee">Account name (payee)</label>
+          <input
+            id="mn-payee"
+            placeholder="e.g. EHGA Mobility Ltd"
+            value={payee}
+            onChange={(e) => setPayee(e.target.value)}
+          />
+        </div>
+      </div>
+      {err ? <div className="form-error">{err}</div> : null}
+      <div className="actions">
+        <button className="btn" type="submit" disabled={busy}>
+          {busy ? "Saving…" : "Save payment number"}
+        </button>
+        <button className="btn secondary" type="button" onClick={() => { setEditing(false); setErr(""); }} disabled={busy}>
+          Cancel
+        </button>
+      </div>
+    </form>
   );
 }

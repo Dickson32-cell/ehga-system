@@ -285,6 +285,35 @@ export default function PortalDashboardClient({ session }) {
 function PayButton({ subjectType, code, amount }) {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [payTo, setPayTo] = useState(null);
+  const [copied, setCopied] = useState("");
+
+  // Fetch the company's payment MoMo number once, so customers can pay by
+  // dialling the USSD string even while the gateway is not yet live.
+  useEffect(() => {
+    fetch("/api/momo-number")
+      .then((r) => r.json())
+      .then((j) => {
+        if (j.number) setPayTo(j);
+      })
+      .catch(() => {});
+  }, []);
+
+  function ussd() {
+    // Kept for a future per-network dial string; the Copy button covers payment for now.
+    return `*170#`;
+  }
+
+  async function copyNumber() {
+    if (!payTo?.number) return;
+    try {
+      await navigator.clipboard.writeText(payTo.number);
+      setCopied("Number copied");
+      setTimeout(() => setCopied(""), 2000);
+    } catch {
+      setCopied(payTo.number);
+    }
+  }
 
   async function pay() {
     setBusy(true);
@@ -314,6 +343,15 @@ function PayButton({ subjectType, code, amount }) {
       <button className="btn small" type="button" onClick={pay} disabled={busy}>
         {busy ? "Starting…" : `Pay MoMo ${money(amount)}`}
       </button>
+      {payTo ? (
+        <span className="hint">
+          Pay to <b>{payTo.number}</b>
+          {payTo.payee ? ` (${payTo.payee})` : ""}{" "}
+          <button className="btn small secondary" type="button" onClick={copyNumber}>
+            {copied || "Copy"}
+          </button>
+        </span>
+      ) : null}
       {msg ? <span className="hint">{msg}</span> : null}
     </span>
   );

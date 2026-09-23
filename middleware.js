@@ -15,6 +15,7 @@ export function middleware(request) {
     pathname.startsWith("/api/portal") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/paystack") ||
+    pathname === "/api/momo-number" ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname === "/manifest.json" ||

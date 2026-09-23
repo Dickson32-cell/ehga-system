@@ -9,5 +9,5 @@ export default async function MomoPage() {
   if (!session) redirect("/login");
   const allowed = ["MANAGING_DIRECTOR", "OPERATIONS_MANAGER", "ACCOUNTANT"].includes(session.role);
   if (!allowed) redirect("/app");
-  return <MomoClient />;
+  return <MomoClient role={session.role} />;
 }
