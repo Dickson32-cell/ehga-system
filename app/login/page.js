@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { getCustomerSession } from "@/lib/customer-auth";
 import { redirect } from "next/navigation";
@@ -20,6 +21,12 @@ export default async function LoginPage() {
           <p>Sign in</p>
         </div>
         <LoginForm />
+        <p style={{ margin: "1rem 0 0", fontSize: "0.86rem", textAlign: "center", fontFamily: "system-ui, sans-serif", color: "var(--ink-soft)" }}>
+          New customer?{" "}
+          <Link href="/portal/auth?mode=register" style={{ color: "var(--good)", fontWeight: 600 }}>
+            Sign up
+          </Link>
+        </p>
       </div>
     </div>
   );
