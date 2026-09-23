@@ -101,7 +101,7 @@ function TripCard({ row, focus, now }) {
 
       {row.vehicle_model ? (
         <p className="carline">
-          🚗 {row.vehicle_model} · {row.vehicle_color} · <b>{row.vehicle_registration}</b>
+          Vehicle {row.vehicle_model} · {row.vehicle_color} · <b>{row.vehicle_registration}</b>
         </p>
       ) : (
         <p className="hint">Car will appear here once assigned.</p>

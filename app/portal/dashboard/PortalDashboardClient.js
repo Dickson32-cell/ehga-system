@@ -39,7 +39,7 @@ function CarLine({ row }) {
   if (!row.vehicle_model && !row.vehicle_registration) return <span className="hint">Car assigned soon</span>;
   return (
     <span className="carline">
-      🚗 {row.vehicle_model || row.vehicle_code} · {row.vehicle_color} ·{" "}
+      Vehicle {row.vehicle_model || row.vehicle_code} · {row.vehicle_color} ·{" "}
       <b>{row.vehicle_registration}</b>
     </span>
   );
