@@ -43,7 +43,7 @@ export default function HireForm() {
         form.pickup && form.destination
           ? `Private: ${form.pickup} to ${form.destination}`
           : "Within Koforidua";
-      const res = await fetch("/api/hire-quote", {
+      const res = await fetch("/api/portal/hire-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
