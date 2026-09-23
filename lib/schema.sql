@@ -406,7 +406,21 @@ ALTER TABLE vehicle ADD COLUMN IF NOT EXISTS seat_capacity INTEGER NOT NULL DEFA
 ALTER TABLE vehicle ADD COLUMN IF NOT EXISTS km_per_litre NUMERIC(6,2);
 ALTER TABLE app_user ADD COLUMN IF NOT EXISTS must_change_password BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE app_user ADD COLUMN IF NOT EXISTS password_changed_at TIMESTAMPTZ;
+
+-- One-time SMS OTP for customer registration (single-use, 10-minute expiry).
+CREATE TABLE IF NOT EXISTS phone_otp (
+  id          SERIAL PRIMARY KEY,
+  phone       TEXT NOT NULL,
+  code_hash   TEXT NOT NULL,
+  purpose     TEXT NOT NULL DEFAULT 'REGISTER',
+  used        BOOLEAN NOT NULL DEFAULT FALSE,
+  attempts    INTEGER NOT NULL DEFAULT 0,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  expires_at  TIMESTAMPTZ NOT NULL,
+  used_at     TIMESTAMPTZ
+);
 ALTER TABLE app_user ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS phone_verified BOOLEAN NOT NULL DEFAULT FALSE;
 ALTER TABLE booking ADD COLUMN IF NOT EXISTS source TEXT;
 ALTER TABLE parcel  ADD COLUMN IF NOT EXISTS source TEXT;
 ALTER TABLE private_hire ADD COLUMN IF NOT EXISTS source TEXT;
