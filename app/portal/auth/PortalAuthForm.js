@@ -31,27 +31,20 @@ export default function PortalAuthForm({ initialMode }) {
     }
   }
 
+  const register = mode === "register";
+
   return (
     <div className="login-wrap">
       <div className="login-card portal-auth">
         <div className="wordmark">
-          <h1>{mode === "register" ? "Create your account" : "Welcome back"}</h1>
-          <p>EHGA Mobility · Customer Portal</p>
-        </div>
-
-        <div className="mode-tabs" role="tablist">
-          <button type="button" className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>
-            Sign in
-          </button>
-          <button type="button" className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>
-            Create account
-          </button>
+          <h1>{register ? "Create your account" : "Welcome back"}</h1>
+          <p>EHGA Mobility — Customer Portal</p>
         </div>
 
         {error ? <div className="form-error">{error}</div> : null}
 
         <form onSubmit={submit}>
-          {mode === "register" ? (
+          {register ? (
             <div className="field">
               <label htmlFor="c-name">Full name *</label>
               <input
@@ -75,30 +68,46 @@ export default function PortalAuthForm({ initialMode }) {
               required
               autoComplete="tel"
             />
-            <div className="hint">Your number is your login. Ghana numbers only.</div>
+            {register ? <div className="hint">Your number is your login. Ghana numbers only.</div> : null}
           </div>
           <div className="field">
-            <label htmlFor="c-pass">Password * {mode === "register" ? "(min 8 characters)" : ""}</label>
+            <label htmlFor="c-pass">Password * {register ? "(min 8 characters)" : ""}</label>
             <input
               id="c-pass"
               type="password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               required
-              minLength={mode === "register" ? 8 : 1}
-              autoComplete={mode === "register" ? "new-password" : "current-password"}
+              minLength={register ? 8 : 1}
+              autoComplete={register ? "new-password" : "current-password"}
             />
           </div>
           <button className="btn" type="submit" disabled={busy} style={{ width: "100%" }}>
-            {busy ? "Please wait..." : mode === "register" ? "Create account" : "Sign in"}
+            {busy ? "Please wait..." : register ? "Create account" : "Sign in"}
           </button>
         </form>
+
+        <p style={{ margin: "1.1rem 0 0", fontSize: "0.88rem", textAlign: "center", fontFamily: "system-ui, sans-serif", color: "var(--ink-soft)" }}>
+          {register ? (
+            <>
+              Already registered?{" "}
+              <button type="button" className="linklike" onClick={() => setMode("login")}>
+                Sign in
+              </button>
+            </>
+          ) : (
+            <>
+              New customer?{" "}
+              <button type="button" className="linklike" onClick={() => setMode("register")}>
+                Sign up
+              </button>
+            </>
+          )}
+        </p>
 
         <p className="portal-auth-note">
           By continuing you agree that your trip details are stored securely and shown to you only.{" "}
           <Link href="/portal">Back to home</Link>
-          {" · "}
-          <Link href="/login">One login for staff &amp; customers</Link>
         </p>
       </div>
     </div>
