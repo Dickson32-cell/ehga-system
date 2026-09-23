@@ -31,3 +31,6 @@ CREDENTIALS.txt
 
 # eslint cache
 .eslintcache
+
+.vercel
+.env*

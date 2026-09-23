@@ -5,8 +5,13 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "/app", label: "Dashboard", roles: null },
+  { href: "/app/my-job", label: "My Job", roles: ["DRIVER", "RIDER", "DISPATCHER", "MANAGING_DIRECTOR", "OPERATIONS_MANAGER"] },
   { href: "/app/bookings", label: "Bookings", roles: null },
   { href: "/app/dispatch", label: "Dispatch", roles: null },
+  { href: "/app/tracker", label: "Fleet Tracker", roles: null },
+  { href: "/app/incidents", label: "Incidents", roles: null },
+  { href: "/app/momo", label: "MoMo", roles: ["MANAGING_DIRECTOR", "OPERATIONS_MANAGER", "ACCOUNTANT"] },
+  { href: "/app/reports", label: "Reports", roles: null },
   { href: "/app/parcels", label: "Parcels", roles: null },
   { href: "/app/trips", label: "Trips", roles: null },
   { href: "/app/fuel", label: "Fuel", roles: null },

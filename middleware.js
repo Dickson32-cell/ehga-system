@@ -5,10 +5,16 @@ const SESSION_COOKIE = "ehga_session";
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
-  // Always allow login page, login/logout APIs and static assets
+  // Always allow: staff login page, CUSTOMER PORTAL (pages + APIs), auth
+  // APIs, payment webhook and static assets. The portal enforces its own
+  // customer sessions server-side on every page and route.
   if (
     pathname === "/login" ||
+    pathname === "/" ||
+    pathname.startsWith("/portal") ||
+    pathname.startsWith("/api/portal") ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/paystack") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname === "/manifest.json" ||
@@ -29,5 +35,5 @@ export function middleware(request) {
 }
 
 export const config = {
-  matcher: ["/app/:path*", "/api/:path*", "/"],
+  matcher: ["/app/:path*", "/api/:path*", "/", "/portal/:path*"],
 };

@@ -381,3 +381,117 @@ INSERT INTO setup_kv(key, value) VALUES
   ('maintenance_reserve', '0.35'),
   ('cash_variance_tolerance', '50')
 ON CONFLICT (key) DO NOTHING;
+
+-- ============================================================
+-- PHASE 2: Customer Portal, GPS, sign-off, ratings, incidents,
+-- MoMo. All idempotent (safe to re-run with setup-db.js).
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS customer (
+  id            SERIAL PRIMARY KEY,
+  phone         TEXT NOT NULL UNIQUE,
+  full_name     TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  active        BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE booking      ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);
+ALTER TABLE parcel       ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);
+ALTER TABLE private_hire ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);
+ALTER TABLE school_student ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);
+
+ALTER TABLE vehicle ADD COLUMN IF NOT EXISTS rate_per_km NUMERIC(10,2);
+ALTER TABLE booking ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE parcel  ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE private_hire ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE school_student ADD COLUMN IF NOT EXISTS source TEXT;
+ALTER TABLE private_hire ADD COLUMN IF NOT EXISTS quote_status TEXT NOT NULL DEFAULT 'Auto';
+
+CREATE TABLE IF NOT EXISTS incident (
+  id            SERIAL PRIMARY KEY,
+  incident_code TEXT UNIQUE,
+  date          DATE NOT NULL,
+  vehicle_id    TEXT REFERENCES vehicle(vehicle_code),
+  trip_id       INTEGER REFERENCES trip(id),
+  type          TEXT NOT NULL DEFAULT 'Other',
+  severity      TEXT NOT NULL DEFAULT 'Minor',
+  description   TEXT,
+  action_taken  TEXT,
+  status        TEXT NOT NULL DEFAULT 'Open',
+  reported_by   TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted       BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE IF NOT EXISTS departure_signoff (
+  id          SERIAL PRIMARY KEY,
+  dispatch_id INTEGER NOT NULL REFERENCES dispatch(id),
+  signed_by   TEXT NOT NULL,
+  role        TEXT NOT NULL,
+  checks      TEXT NOT NULL DEFAULT '',
+  gps_ok      BOOLEAN NOT NULL DEFAULT FALSE,
+  signed_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+  deleted     BOOLEAN NOT NULL DEFAULT FALSE,
+  UNIQUE (dispatch_id)
+);
+
+CREATE TABLE IF NOT EXISTS trip_rating (
+  id             SERIAL PRIMARY KEY,
+  subject_type   TEXT NOT NULL CHECK (subject_type IN ('BOOKING','PARCEL','PRIVATE_HIRE','SCHOOL')),
+  subject_id     INTEGER NOT NULL,
+  rating         INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  comment        TEXT,
+  by_customer_id INTEGER REFERENCES customer(id),
+  created_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS vehicle_position (
+  id           SERIAL PRIMARY KEY,
+  vehicle_code TEXT NOT NULL REFERENCES vehicle(vehicle_code),
+  lat          DOUBLE PRECISION NOT NULL,
+  lng          DOUBLE PRECISION NOT NULL,
+  speed_kph    DOUBLE PRECISION,
+  heading      DOUBLE PRECISION,
+  accuracy_m   DOUBLE PRECISION,
+  job_type     TEXT,
+  job_code     TEXT,
+  recorded_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_vpos_vehicle ON vehicle_position(vehicle_code, recorded_at DESC);
+
+CREATE TABLE IF NOT EXISTS momo_transaction (
+  id            SERIAL PRIMARY KEY,
+  reference     TEXT NOT NULL UNIQUE,
+  provider      TEXT NOT NULL DEFAULT 'paystack',
+  subject_type  TEXT NOT NULL CHECK (subject_type IN ('BOOKING','PARCEL','PRIVATE_HIRE','SCHOOL')),
+  subject_id    INTEGER NOT NULL,
+  customer_id   INTEGER REFERENCES customer(id),
+  amount        NUMERIC(12,2) NOT NULL,
+  phone         TEXT,
+  status        TEXT NOT NULL DEFAULT 'Pending',
+  provider_ref  TEXT,
+  created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+  paid_at       TIMESTAMPTZ
+);
+
+-- Incident serial codes (EL-I), same never-reused pattern
+CREATE OR REPLACE FUNCTION ehga_code_incident() RETURNS trigger AS $$
+BEGIN
+  NEW.incident_code := COALESCE(NEW.incident_code, next_serial('EL-I'));
+  RETURN NEW;
+END; $$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_incident_code ON incident;
+CREATE TRIGGER trg_incident_code BEFORE INSERT ON incident FOR EACH ROW EXECUTE FUNCTION ehga_code_incident();
+
+INSERT INTO serial_counter(code_key, prefix, seq) VALUES ('EL-I', 'EL-I-', 0) ON CONFLICT (code_key) DO NOTHING;
+
+-- New controlled lists / config (editable in Setup)
+INSERT INTO setup_kv(key, value) VALUES
+  ('route_km', 'Koforidua to Accra:90|Accra to Koforidua:90|Within Koforidua:15|Within Accra:20'),
+  ('hire_base_fare', '50'),
+  ('avg_speed_kph', '60'),
+  ('whatsapp_line', '233000000000'),
+  ('route_endpoints', 'Koforidua to Accra:6.0900,-0.2590|Accra to Koforidua:5.6130,-0.2340')
+ON CONFLICT (key) DO NOTHING;

@@ -16,6 +16,11 @@ const TARGET_KEYS = [
   ["fuel_price", "Fuel price per litre (GHS)"],
   ["maintenance_reserve", "Maintenance reserve per km (GHS)"],
   ["cash_variance_tolerance", "Cash variance tolerance (GHS)"],
+  ["hire_base_fare", "Private-hire base fare (GHS)"],
+  ["avg_speed_kph", "Average speed for ETAs (km/h)"],
+  ["route_km", "Route distances (Name:km|Name:km)"],
+  ["route_endpoints", "Route map points (Name:lat,lng)"],
+  ["whatsapp_line", "WhatsApp booking line (233…)"],
 ];
 
 const LABELS = {

@@ -186,3 +186,82 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 @media print {
   .topbar, .mainnav, .footer, .actions, .btn { display: none !important; }
 }
+
+/* ================= Customer Portal ================= */
+.portal { min-height: 100vh; display: flex; flex-direction: column; background: var(--paper); }
+.portal-top {
+  background: var(--card); border-bottom: 2px solid var(--ink);
+  padding: 0.7rem 1.2rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+}
+.portal-brand { display: flex; flex-direction: column; text-decoration: none; color: var(--ink); }
+.portal-brand b { font-size: 1.05rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.portal-brand span { font-family: system-ui, sans-serif; font-size: 0.75rem; color: var(--ink-faint); }
+.portal-authnav { display: flex; align-items: center; gap: 0.7rem; font-family: system-ui, sans-serif; }
+.portal-hello { font-size: 0.85rem; color: var(--ink-soft); }
+.portal-nav {
+  background: var(--ink); padding: 0 0.6rem; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.portal-nav a { color: #d8d5cf; font-family: system-ui, sans-serif; font-size: 0.82rem; padding: 0.65rem 0.85rem; white-space: nowrap; border-bottom: 3px solid transparent; }
+.portal-nav a:hover { color: #fff; text-decoration: none; }
+.portal-nav a.active { color: #fff; border-bottom-color: #cfa96b; }
+.portal-main { flex: 1; padding: 1.4rem 1.2rem 3rem; max-width: 1100px; margin: 0 auto; width: 100%; }
+.portal-footer { border-top: 1px solid var(--line); padding: 1rem 1.2rem; color: var(--ink-faint); font-size: 0.78rem; font-family: system-ui, sans-serif; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+
+.portal-hero { text-align: center; padding: 2.5rem 0.5rem 2rem; }
+.portal-hero h1 { font-size: 2rem; max-width: 22ch; margin: 0 auto 0.8rem; }
+.portal-hero p { max-width: 58ch; margin: 0 auto; color: var(--ink-soft); }
+.portal-cta { display: flex; gap: 0.7rem; justify-content: center; margin-top: 1.4rem; flex-wrap: wrap; }
+.btn.big { padding: 0.8rem 1.6rem; font-size: 0.95rem; }
+
+.portal-services { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.9rem; margin: 1.5rem 0; }
+@media (max-width: 900px) { .portal-services { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .portal-services { grid-template-columns: 1fr; } }
+.service-card { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: var(--radius); padding: 1rem 1.1rem; color: var(--ink); display: block; }
+.service-card:hover { text-decoration: none; border-color: var(--accent); box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+.service-tag { font-family: system-ui, sans-serif; font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent); }
+.service-card h2 { font-size: 1.05rem; margin: 0.3rem 0 0.4rem; }
+.service-card p { font-size: 0.84rem; color: var(--ink-soft); font-family: system-ui, sans-serif; }
+
+.portal-trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; padding: 1rem 0 2rem; }
+@media (max-width: 700px) { .portal-trust { grid-template-columns: 1fr; } }
+.portal-trust h3 { font-size: 0.95rem; margin-bottom: 0.3rem; }
+.portal-trust p { font-size: 0.84rem; color: var(--ink-soft); font-family: system-ui, sans-serif; }
+
+.portal-auth { max-width: 440px; }
+.portal-auth-note { margin-top: 1rem; font-size: 0.74rem; color: var(--ink-faint); font-family: system-ui, sans-serif; text-align: center; }
+.portal-stafflink { text-align: center; margin-top: 1rem; font-family: system-ui, sans-serif; font-size: 0.8rem; }
+
+.mode-tabs { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 6px; overflow: hidden; margin-bottom: 1rem; }
+.mode-tabs.left { display: flex; }
+.mode-tabs button { border: 0; background: transparent; padding: 0.5rem 1rem; font-family: system-ui, sans-serif; font-size: 0.84rem; cursor: pointer; color: var(--ink-soft); }
+.mode-tabs button.active { background: var(--accent); color: #fff; }
+
+.trip-card { margin-bottom: 0.9rem; }
+.trip-card.focus { border-color: var(--accent); border-width: 2px; }
+.trip-head { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
+.trip-date { font-family: system-ui, sans-serif; font-size: 0.8rem; color: var(--ink-soft); margin-left: auto; }
+.carline { font-family: system-ui, sans-serif; font-size: 0.85rem; color: var(--ink-soft); }
+.trip-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.4rem; }
+.trip-actions { margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+.paybtn { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.mapwrap { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; margin-top: 0.4rem; }
+.track-steps { list-style: none; display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; padding: 0; }
+.track-steps li { font-family: system-ui, sans-serif; font-size: 0.72rem; padding: 0.15rem 0.6rem; border-radius: 999px; background: #eceae5; color: var(--ink-faint); }
+.track-steps li.on { background: var(--good-soft); color: var(--good); font-weight: 600; }
+.ratebox { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+.ratebox input { flex: 1; min-width: 140px; padding: 0.3rem 0.5rem; border: 1px solid var(--line-strong); border-radius: 4px; font-size: 0.8rem; }
+.star { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: #c9c6be; padding: 0 0.1rem; }
+.star.on { color: #d99a26; }
+.portal-done h2 { margin-bottom: 0.6rem; }
+.portal-done { border-top: 4px solid var(--good); }
+
+/* Staff tracker + ops extras */
+.map-big { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--card); }
+.fleet-row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; padding: 0.5rem 0.2rem; border-bottom: 1px solid var(--line); font-family: system-ui, sans-serif; font-size: 0.82rem; }
+.fleet-row:last-child { border-bottom: 0; }
+.pulse { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+.pulse.live { background: var(--good); box-shadow: 0 0 0 3px var(--good-soft); }
+.pulse.stale { background: var(--warn); box-shadow: 0 0 0 3px var(--warn-soft); }
+.pulse.off { background: var(--ink-faint); }
+.signoff-box { border: 1px dashed var(--line-strong); border-radius: var(--radius); padding: 0.8rem; margin-top: 0.7rem; background: #fbfaf7; }
+.signoff-box .checkline { display: flex; align-items: center; gap: 0.5rem; font-family: system-ui, sans-serif; font-size: 0.84rem; padding: 0.2rem 0; }
