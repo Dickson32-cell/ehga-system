@@ -97,9 +97,6 @@ export default function LoginForm() {
       <button className="btn" type="submit" disabled={busy} style={{ width: "100%" }}>
         {busy ? "Signing in..." : "Sign in"}
       </button>
-      <p style={{ marginTop: "0.9rem", fontSize: "0.78rem", color: "var(--ink-faint)", fontFamily: "system-ui, sans-serif", textAlign: "center" }}>
-        Staff use your work username · Customers use your phone number
-      </p>
     </form>
   );
 }

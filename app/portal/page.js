@@ -39,8 +39,7 @@ export default async function PortalHome() {
               The road,<br />run properly.
             </h1>
             <p className="lx-lede">
-              Seat bookings, same-day parcels and private hire on the Eastern corridor.
-              Every trip tracked live. Every cedi accounted for.
+              Seats, parcels and private hire on the Eastern corridor — tracked live, start to finish.
             </p>
             <div className="lx-board-cta">
               {session ? (
@@ -118,30 +117,6 @@ export default async function PortalHome() {
             <span className="lx-row-desc">Guardian pickup codes, &quot;child on board&quot; alerts, route discipline.</span>
             <span className="lx-row-go">Sign up<i>→</i></span>
           </Link>
-        </section>
-
-        {/* ---- Manifest strip: proof, not promises ---- */}
-        <section className="lx-proof">
-          <div className="lx-proof-head">
-            <h2>Built like a ledger, not an app.</h2>
-          </div>
-          <div className="lx-proof-grid">
-            <div className="lx-proof-item">
-              <span className="lx-proof-no">A.</span>
-              <h3>Live on the map</h3>
-              <p>Driver GPS on duty, 15-second refresh. Watch the parcel move; know when the bus turns onto your street.</p>
-            </div>
-            <div className="lx-proof-item">
-              <span className="lx-proof-no">B.</span>
-              <h3>Codes, not promises</h3>
-              <p>Bookings, parcels, children — each gets a serial code. Your guardian pickup code is the only key to your child.</p>
-            </div>
-            <div className="lx-proof-item">
-              <span className="lx-proof-no">C.</span>
-              <h3>Your data, sealed</h3>
-              <p>Your account shows only records created on your number. Not another customer&apos;s. Ever.</p>
-            </div>
-          </div>
         </section>
       </main>
 
