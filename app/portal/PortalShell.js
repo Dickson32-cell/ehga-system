@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const NAV = [
   { href: "/portal/dashboard", label: "My account" },
@@ -14,12 +15,25 @@ const NAV = [
 
 export default function PortalShell({ active, session, children }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  // Close the drawer on navigation or Escape (same behaviour as the staff app).
+  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   async function logout() {
     await fetch("/api/portal/auth/logout", { method: "POST" });
     router.replace("/portal");
     router.refresh();
   }
+
+  const current = NAV.find((n) => n.href === active || n.href === pathname);
 
   return (
     <div className="lx">
@@ -38,10 +52,42 @@ export default function PortalShell({ active, session, children }) {
         </div>
       </header>
 
-      <nav className="lx-tabs">
+      <nav className="lx-tabs" aria-label="Portal navigation">
+        {/* Phone-only menu button */}
+        <div className="lx-tabs-mobile">
+          <button
+            type="button"
+            className="lx-tabs-toggle"
+            aria-expanded={open}
+            onClick={() => setOpen((o) => !o)}
+          >
+            <span className="mainnav-burger" aria-hidden="true">
+              <i /><i /><i />
+            </span>
+            Menu
+            {current ? <span className="mainnav-current">{current.label}</span> : null}
+          </button>
+        </div>
+
+        {open ? (
+          <div className="lx-tabs-drawer">
+            {NAV.map((n) => (
+              <Link
+                key={n.href}
+                href={n.href}
+                className={(active === n.href || pathname === n.href) ? "drawer-link active" : "drawer-link"}
+                onClick={() => setOpen(false)}
+              >
+                {n.label}
+              </Link>
+            ))}
+          </div>
+        ) : null}
+
+        {/* Tablet/desktop strip (unchanged) */}
         <div className="lx-tabs-inner">
           {NAV.map((n) => (
-            <Link key={n.href} href={n.href} className={active === n.href ? "active" : ""}>
+            <Link key={n.href} href={n.href} className={(active === n.href || pathname === n.href) ? "active" : ""}>
               {n.label}
             </Link>
           ))}

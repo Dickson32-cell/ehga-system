@@ -747,3 +747,53 @@ input[type="date"] { padding-right: 2.4rem; }
   text-underline-offset: 2px; min-height: 32px;
 }
 .linklike:hover { color: var(--ink); }
+
+/* ================= Portal mobile nav (same ergonomics as staff app) ================= */
+.lx-tabs-mobile { display: none; }
+
+@media (max-width: 640px) {
+  .lx-tabs-inner { display: none; }
+
+  .lx-tabs-mobile {
+    display: block;
+    background: var(--lx-ink, #17150f);
+    padding: 0.35rem 0.6rem;
+    position: sticky; top: 0; z-index: 39;
+  }
+  .lx-tabs-toggle {
+    display: flex; align-items: center; gap: 0.6rem;
+    width: 100%; background: transparent; border: 0; color: #e7e3d6;
+    font-family: system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
+    padding: 0.55rem 0.5rem; min-height: 44px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lx-tabs-toggle:active { opacity: 0.75; }
+  .lx-tabs-toggle .mainnav-current {
+    margin-left: auto; font-weight: 400; color: #b5af9f;
+    max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .lx-tabs-drawer {
+    background: var(--lx-ink, #17150f);
+    padding: 0.2rem 0.5rem 0.7rem;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
+    position: sticky; top: 53px; z-index: 38;
+    border-bottom: 3px solid var(--lx-gold, #b98a2f);
+    max-height: 70dvh; overflow-y: auto;
+  }
+  .lx-tabs-drawer .drawer-link {
+    color: #d8d5cf; font-family: system-ui, sans-serif; font-size: 0.9rem;
+    padding: 0.75rem 0.7rem; min-height: 44px; display: flex; align-items: center;
+    border-bottom: 1px solid #2a2e33; border-radius: 3px; text-decoration: none;
+  }
+  .lx-tabs-drawer .drawer-link:active { background: #2a2e33; }
+  .lx-tabs-drawer .drawer-link.active { color: #fff; background: #2a2e33; box-shadow: inset 2px 0 0 var(--lx-gold, #b98a2f); }
+
+  /* Masthead: keep brand + user on one line but let user name truncate */
+  .lx-mast-inner { gap: 0.5rem; }
+  .lx-mast-user { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lx-as-btn { min-height: 44px; }
+
+  /* Footer stacks vertically on phones */
+  .lx-foot-inner { flex-direction: column; gap: 0.35rem; text-align: center; }
+}
