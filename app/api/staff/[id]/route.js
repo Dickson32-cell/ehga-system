@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
  * PATCH { full_name?, username?, role?, active?, password?, email? }
  *   CEO (MANAGING_DIRECTOR): edit any staff record — details, role, active,
  *   temporary password. CEO-issued password forces change at next login.
- *   Operations Manager: may edit Drivers/Riders only (details + active);
- *   no role changes, no password resets, never touches MD/Ops/Accountant.
+ *   HR: may edit Drivers/Riders only (details + active);
+ *   no role changes, no password resets, never touches MD/HR/Ops/Accountant.
  */
 export const PATCH = apiHandler(async (req, ctx) => {
   const session = await requireStaffManager();
@@ -21,7 +21,7 @@ export const PATCH = apiHandler(async (req, ctx) => {
   if (!rows.length) return Response.json({ error: "Not found" }, { status: 404 });
   const target = rows[0];
 
-  // Visibility guard: Ops Managers may only touch drivers and riders.
+  // Visibility guard: HR may only touch drivers and riders.
   if (!STAFF_MANAGE_ROLES[session.role].includes(target.role)) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }

@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 
 const ROLE_LABEL = {
   MANAGING_DIRECTOR: "Managing Director",
+  HR: "Human Resources",
   OPERATIONS_MANAGER: "Operations Manager",
   DISPATCHER: "Dispatcher",
   ACCOUNTANT: "Accountant",

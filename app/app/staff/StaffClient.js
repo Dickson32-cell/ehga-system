@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 const LABELS = {
   MANAGING_DIRECTOR: "Managing Director",
+  HR: "Human Resources",
   OPERATIONS_MANAGER: "Operations Manager",
   DISPATCHER: "Dispatcher",
   ACCOUNTANT: "Accountant",
@@ -15,14 +16,14 @@ export default function StaffClient({ me, myRole }) {
   const isCEO = myRole === "MANAGING_DIRECTOR";
   // Which roles I may create/edit — the server enforces it; the form mirrors it.
   const creatable = isCEO
-    ? ["MANAGING_DIRECTOR", "OPERATIONS_MANAGER", "ACCOUNTANT", "DRIVER", "RIDER"]
+    ? ["HR", "OPERATIONS_MANAGER", "ACCOUNTANT", "DISPATCHER", "DRIVER", "RIDER"]
     : ["DRIVER", "RIDER"];
 
   const [rows, setRows] = useState([]);
   const [error, setError] = useState("");
   const [okMsg, setOkMsg] = useState("");
   const [busy, setBusy] = useState(false);
-  const [form, setForm] = useState({ username: "", full_name: "", role: creatable[creatable.length - 1], email: "", password: "" });
+  const [form, setForm] = useState({ username: "", full_name: "", role: "DRIVER", email: "", password: "" });
   const [editing, setEditing] = useState(null);
   const [editForm, setEditForm] = useState({ username: "", full_name: "", email: "" });
 
@@ -48,7 +49,7 @@ export default function StaffClient({ me, myRole }) {
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(json.error || "Create failed");
       setOkMsg(`Created ${json.data.username} (${LABELS[json.data.role]}). Give them the temporary password — they will set their own at first login.`);
-      setForm({ username: "", full_name: "", role: creatable[creatable.length - 1], email: "", password: "" });
+      setForm({ username: "", full_name: "", role: "DRIVER", email: "", password: "" });
       await load();
     } catch (err) { setError(err.message); } finally { setBusy(false); }
   }
@@ -113,8 +114,8 @@ export default function StaffClient({ me, myRole }) {
           <h1>{isCEO ? "Staff Accounts" : "Field Staff"}</h1>
           <p className="panel-note">
             {isCEO
-              ? "You see every account. Add Managing Directors, Operations Managers, Accountants, Drivers and Riders; edit details; issue temporary passwords (staff set their own at first login); deactivate or delete."
-              : "You manage Drivers and Riders for field operations. Passwords are issued by the CEO."}
+              ? "You oversee every account. Add HR, Operations Managers, Accountants, Dispatchers, Drivers and Riders; edit details; issue temporary passwords (staff set their own at first login); deactivate or delete."
+              : "You recruit and manage Drivers and Dispatch Riders. Passwords are issued by the CEO."}
           </p>
         </div>
       </div>

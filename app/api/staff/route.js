@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 /**
  * GET /api/staff
- *   CEO sees everyone. Operations Manager sees only drivers and riders.
+ *   CEO sees everyone. HR sees only drivers and riders.
  */
 export const GET = apiHandler(async () => {
   const session = await requireStaffManager();
@@ -25,8 +25,8 @@ export const GET = apiHandler(async () => {
 
 /**
  * POST { username, full_name, role, password, email? } — creates a staff user.
- *   CEO may create: MD, Operations Manager, Accountant, Driver, Rider.
- *   Operations Manager may create: Driver, Rider (field staffing only).
+ *   CEO may create: HR, Operations Manager, Accountant, Dispatcher, Driver, Rider.
+ *   HR may create: Driver, Rider (field staffing only).
  * Password is temporary: the account is flagged must_change_password and the
  * staff member sets their own password at first login.
  */
@@ -46,7 +46,7 @@ export const POST = apiHandler(async (req) => {
     return Response.json(
       { error: session.role === "MANAGING_DIRECTOR"
         ? "role must be one of " + allowed.join(", ")
-        : "As Operations Manager you can only add Drivers and Riders" },
+        : "As HR you can only add Drivers and Dispatch Riders" },
       { status: 403 }
     );
   }
