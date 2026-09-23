@@ -671,3 +671,39 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 @media (max-width: 640px) {
   .footer { flex-direction: column; gap: 0.3rem; text-align: center; padding: 0.9rem 1rem; }
 }
+
+/* ================= Overlap fixes (verified against live site) ================= */
+
+/* 1) Dashboard "Apply period" form: on phones stack everything full-width so the
+      two date fields and the button never share a row and the native date-picker
+      icon never collides with the date text. */
+@media (max-width: 640px) {
+  .page-head form.actions { align-items: stretch; }
+  .page-head form.actions .field { width: 100%; }
+  .page-head form.actions .field input { width: 100%; min-height: 48px; padding-right: 2.4rem; }
+  .page-head form.actions .btn { width: 100%; min-height: 48px; white-space: nowrap; }
+}
+/* Date inputs: reserve space for the native calendar icon so text never sits under it */
+input[type="date"] { padding-right: 2.4rem; }
+
+/* 2) Overlap-proofing pass (general): long strings wrap, cards grow, nothing collides */
+.tablewrap td, .metric, .panel, .trip-card, .notice {
+  overflow-wrap: break-word;
+  word-break: normal;
+  min-width: 0;
+}
+.tablewrap td span, .badge.code, .userbox .who { overflow-wrap: anywhere; }
+.badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.metric .m-result { overflow-wrap: anywhere; }
+.trip-card > * + * { margin-top: 0.45rem; }
+.mainnav-drawer { max-height: 70dvh; overflow-y: auto; }
+.paybtn { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; max-width: 100%; }
+.paybtn .hint { max-width: 100%; overflow-wrap: anywhere; }
+.field { min-width: 0; }
+.field label { display: block; margin-bottom: 0.3rem; }
+.userbox { flex-wrap: wrap; row-gap: 0.25rem; }
+.mapwrap, .map-big { min-width: 0; overflow: hidden; }
+.actions { flex-wrap: wrap; }
+.lx-row-name, .lx-row-desc, .lx-fare { overflow-wrap: break-word; }
+.lx-board-row { min-width: 0; }
+.lx-board-row > * { overflow-wrap: break-word; }
