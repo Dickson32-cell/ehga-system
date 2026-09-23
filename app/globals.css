@@ -450,3 +450,124 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .login-wrap .wordmark h1 { font-size: 1.7rem; }
 .login-wrap .mode-tabs { border-color: var(--lx-ink-2); border-radius: 0; }
 .login-wrap .mode-tabs button.active { background: var(--lx-green); }
+
+/* ================= Responsive tiers: phone / tablet / desktop ================= */
+/* Tier variables: touch targets grow on mobile, type scales per tier. */
+
+/* ---------- PHONE (<=640px) ---------- */
+@media (max-width: 640px) {
+  html { font-size: 15px; }
+  .shell, .portal, .lx { min-height: 100dvh; }
+
+  /* Topbar: stack brand + user, keep logout reachable */
+  .topbar { padding: 0.6rem 0.8rem; }
+  .userbox { gap: 0.6rem; }
+  .userbox .who { text-align: left; font-size: 0.78rem; }
+  .brand-sub { display: none; }
+
+  /* Nav: horizontal scroll with momentum (already), bigger taps */
+  .mainnav a, .portal-nav a, .lx-tabs-inner a { padding: 0.8rem 0.95rem; font-size: 0.86rem; }
+
+  .page { padding: 1rem 0.85rem 2.4rem; }
+  .lx-page { padding: 1.2rem 0.85rem 2.6rem; }
+  .page-head { align-items: flex-start; flex-direction: column; gap: 0.6rem; }
+  .page-head h1 { font-size: 1.45rem; }
+  .lx-page h1 { font-size: 1.55rem; }
+
+  /* All form grids collapse to one column; inputs become touch-friendly */
+  .form-grid { grid-template-columns: 1fr; gap: 0.8rem; }
+  .field input, .field select, .field textarea, .lx-page .field input, .lx-page .field select, .lx-page .field textarea {
+    font-size: 16px; /* prevents iOS zoom-on-focus */
+    min-height: 44px; /* Apple/Android minimum touch target */
+    padding: 0.55rem 0.65rem;
+  }
+  .btn { min-height: 44px; padding: 0.6rem 1.1rem; }
+  .btn.small { min-height: 36px; }
+  .actions { gap: 0.6rem; }
+
+  /* Tables: horizontal scroll is already enabled; tighten cells + first-col stickiness */
+  .tablewrap { -webkit-overflow-scrolling: touch; }
+  th, td { padding: 0.5rem 0.6rem; font-size: 0.84rem; }
+
+  /* Metric tiles: 2-up on phones */
+  .grid { gap: 0.7rem; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .metric .m-result { font-size: 1.25rem; }
+
+  /* Trip cards & portal lists */
+  .trip-card { padding: 0.9rem 0.95rem; }
+  .mapwrap iframe { min-height: 220px; }
+  .portal-services, .lx-proof-grid { grid-template-columns: 1fr; }
+
+  /* LX hero: board stacks under headline, fares stay readable */
+  .lx-board { padding: 2rem 1rem 1.8rem; gap: 1.6rem; }
+  .lx-display { font-size: clamp(2.1rem, 9.5vw, 2.8rem); }
+  .lx-board-row { grid-template-columns: 1.3fr 1fr 0.55fr; padding: 0.75rem 0.8rem; font-size: 0.88rem; }
+  .lx-board-row--head { font-size: 0.68rem; }
+  .lx-row { grid-template-columns: 2rem 1fr auto; gap: 0.6rem; padding: 0.9rem 0.2rem; }
+  .lx-row-desc { grid-column: 2 / -1; font-size: 0.86rem; }
+  .lx-mast-inner { padding: 0.7rem 0.9rem; }
+  .lx-page { padding: 1.1rem 0.85rem 2.4rem; }
+
+  /* Login cards: full-width comfort */
+  .login-wrap { padding: 1rem; align-items: flex-start; padding-top: 8vh; }
+  .login-card { max-width: none; }
+
+  /* Modals/banners */
+  .notice { font-size: 0.8rem; }
+
+  /* Print stays clean */
+  .no-print { display: none !important; }
+}
+
+/* ---------- TABLET (641-1024px) ---------- */
+@media (min-width: 641px) and (max-width: 1024px) {
+  html { font-size: 15.5px; }
+  .page, .lx-page { padding: 1.3rem 1.1rem 2.8rem; }
+
+  /* Metric tiles: 3-up on tablets (2 looks sparse, 4 is cramped) */
+  .grid-4 { grid-template-columns: repeat(3, 1fr); }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+  /* Forms: 2 columns on tablet */
+  .form-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .lx-board { gap: 2rem; padding: 2.4rem 1.2rem 2rem; }
+  .lx-row { grid-template-columns: 2.6rem 11rem 1fr auto; }
+  .lx-row-name { font-size: 1.05rem; }
+
+  /* Touch targets slightly larger than desktop */
+  .btn { min-height: 42px; }
+  th, td { padding: 0.55rem 0.65rem; }
+}
+
+/* ---------- DESKTOP (>1024px): denser, more columns ---------- */
+@media (min-width: 1025px) {
+  .page, .lx-page { padding: 1.6rem 1.6rem 3rem; }
+  .form-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* ---------- Large desktop (>=1440px): cap content width, centre ---------- */
+@media (min-width: 1440px) {
+  .page { max-width: 1320px; }
+  .lx-board, .lx-ledger, .lx-proof, .lx-page, .lx-mast-inner, .lx-foot-inner, .lx-tabs-inner { max-width: 1280px; }
+}
+
+/* ---------- Touch devices: no hover-dependence ---------- */
+@media (hover: none) {
+  .mainnav a, .portal-nav a, .lx-tabs-inner a, .btn, .lx-row { -webkit-tap-highlight-color: transparent; }
+  .mainnav a:active, .lx-tabs-inner a:active, .btn:active { opacity: 0.75; }
+}
+
+/* ---------- PWA safe-areas (notches) ---------- */
+@supports (padding: env(safe-area-inset-top)) {
+  .topbar { padding-top: calc(0.6rem + env(safe-area-inset-top)); }
+  .footer, .lx-foot-inner, .portal-footer { padding-bottom: calc(0.9rem + env(safe-area-inset-bottom)); }
+}
+
+/* ---------- Landscape phones: keep tiles 3-up, shrink hero ---------- */
+@media (max-width: 920px) and (orientation: landscape) {
+  .lx-board { grid-template-columns: 1fr 1fr; }
+  .lx-display { font-size: 2rem; }
+  .lx-display::after { margin-top: 0.8rem; }
+}
