@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const LINKS = [
   { href: "/app", label: "Dashboard", roles: null },
-  { href: "/app/my-job", label: "My Job", roles: ["DRIVER", "RIDER", "DISPATCHER", "MANAGING_DIRECTOR", "OPERATIONS_MANAGER"] },
+  { href: "/app/my-job", label: "My Job", roles: ["DRIVER", "RIDER"] },
   { href: "/app/bookings", label: "Bookings", roles: null },
   { href: "/app/dispatch", label: "Dispatch", roles: null },
   { href: "/app/tracker", label: "Fleet Tracker", roles: null },
