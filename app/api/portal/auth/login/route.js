@@ -2,6 +2,7 @@ import { apiHandler } from "@/lib/auth";
 import { query } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { createCustomerToken, CUSTOMER_COOKIE, normalizeGhPhone } from "@/lib/customer-auth";
+import { rateLimit, clientIp } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +15,15 @@ export const POST = apiHandler(async (req) => {
 
   if (!phone) {
     return Response.json({ error: "Enter the phone number you registered with" }, { status: 400 });
+  }
+
+  // Brute-force guard: 10 attempts per phone/IP per 10 minutes.
+  const limited = rateLimit(`cust:${phone}|${clientIp(req)}`, 10, 10 * 60 * 1000);
+  if (limited) {
+    return Response.json(
+      { error: `Too many sign-in attempts. Try again in ${Math.ceil(limited.retryAfterSec / 60)} minute(s).` },
+      { status: 429, headers: { "Retry-After": String(limited.retryAfterSec) } }
+    );
   }
 
   const { rows } = await query(

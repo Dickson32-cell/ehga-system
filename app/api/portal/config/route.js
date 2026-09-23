@@ -9,7 +9,10 @@ export const dynamic = "force-dynamic";
  * WhatsApp line. Real values from Setup, no invention.
  */
 export const GET = apiHandler(async () => {
-  const { rows } = await query("SELECT key, value FROM setup_kv");
+  // Only the fields the public landing page needs — never a blanket setup_kv dump.
+  const { rows } = await query(
+    "SELECT key, value FROM setup_kv WHERE key IN ('directions','standard_fare','whatsapp_line')"
+  );
   const kv = {};
   for (const r of rows) kv[r.key] = r.value;
 

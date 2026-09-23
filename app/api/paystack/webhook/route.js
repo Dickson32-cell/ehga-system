@@ -1,6 +1,7 @@
 import { apiHandler } from "@/lib/auth";
-import { query } from "@/lib/db";
+import { query, tx } from "@/lib/db";
 import { normalizeGhPhone } from "@/lib/customer-auth";
+import { rateLimit, clientIp, safeEqual } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,10 +18,16 @@ export const POST = apiHandler(async (req) => {
   const secret = process.env.PAYSTACK_SECRET_KEY;
   if (!secret) return Response.json({ error: "Gateway not configured" }, { status: 501 });
 
+  // Webhook flood guard: 100 verified-ish requests per IP per 10 minutes.
+  const limited = rateLimit(`paystack:${clientIp(req)}`, 100, 10 * 60 * 1000);
+  if (limited) {
+    return Response.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   const raw = await req.text();
   const signature = req.headers.get("x-paystack-signature") || "";
   const expected = crypto.createHmac("sha512", secret).update(raw).digest("hex");
-  if (signature !== expected) {
+  if (!safeEqual(signature, expected)) {
     return Response.json({ error: "Invalid signature" }, { status: 401 });
   }
 

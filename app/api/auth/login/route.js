@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { findUserByUsername, createSessionToken, SESSION_COOKIE, apiHandler } from "@/lib/auth";
+import { rateLimit, clientIp } from "@/lib/guard";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -10,6 +11,16 @@ export const POST = apiHandler(async (req) => {
   const password = body.password || "";
   if (!username || !password) {
     return Response.json({ error: "Username and password are required" }, { status: 400 });
+  }
+
+  // Brute-force guard: 10 attempts per username or IP per 10 minutes.
+  const key = `staff:${username.toLowerCase()}|${clientIp(req)}`;
+  const limited = rateLimit(key, 10, 10 * 60 * 1000);
+  if (limited) {
+    return Response.json(
+      { error: `Too many sign-in attempts. Try again in ${Math.ceil(limited.retryAfterSec / 60)} minute(s).` },
+      { status: 429, headers: { "Retry-After": String(limited.retryAfterSec) } }
+    );
   }
 
   const user = await findUserByUsername(username);
