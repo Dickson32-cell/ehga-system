@@ -46,7 +46,12 @@ export default function HireForm() {
       const res = await fetch("/api/hire-quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ direction, vehicle_code: form.vehicle_code || null }),
+        body: JSON.stringify({
+          direction,
+          vehicle_code: form.vehicle_code || null,
+          pickup: form.pickup,
+          destination: form.destination,
+        }),
       });
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j.error || "Quote failed");
@@ -208,8 +213,20 @@ export default function HireForm() {
 
           {quote ? (
             <div className="notice info" style={{ marginTop: "0.8rem" }}>
-              Estimated <b>GHS {Number(quote.estimate).toFixed(2)}</b> — {quote.km} km
-              {quote.vehicleRate ? ` × GHS ${quote.vehicleRate}/km` : ""} + GHS {Number(quote.base).toFixed(2)} base.
+              Estimated <b>GHS {Number(quote.estimate).toFixed(2)}</b>
+              {quote.breakdown ? (
+                <ul style={{ margin: "0.5rem 0 0.2rem", paddingLeft: "1.1rem", fontSize: "0.85rem" }}>
+                  {quote.breakdown.map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              ) : null}
+              {quote.vehicleRate === 0 && quote.fuelCost ? (
+                <div style={{ marginTop: "0.2rem" }}>
+                  {quote.km} km at {quote.kmPerLitre} km per litre — fuel alone costs about GHS{" "}
+                  {Number(quote.fuelCost).toFixed(2)} at GHS {Number(quote.fuelPrice).toFixed(2)}/L.
+                </div>
+              ) : null}
               Final price confirmed by the MD.
             </div>
           ) : null}

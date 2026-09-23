@@ -21,6 +21,8 @@ const TARGET_KEYS = [
   ["route_km", "Route distances (Name:km|Name:km)"],
   ["route_endpoints", "Route map points (Name:lat,lng)"],
   ["whatsapp_line", "WhatsApp booking line (233…)"],
+  ["fuel_price_per_litre", "Fuel price per litre (GHS)"],
+  ["km_per_litre", "Default fuel economy (km per litre)"],
 ];
 
 const LABELS = {

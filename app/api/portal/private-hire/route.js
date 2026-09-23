@@ -53,7 +53,7 @@ export const POST = apiHandler(async (req) => {
     if (!v.length) vehicleCode = null;
   }
 
-  const quote = await autoQuote({ direction, vehicleCode });
+  const quote = await autoQuote({ direction, vehicleCode, pickup, destination });
 
   const result = await tx(async (client) => {
     const { rows } = await client.query(
@@ -73,7 +73,7 @@ export const POST = apiHandler(async (req) => {
         String(body.end_time || "").trim() || null,
         vehicleCode,
         quote.estimate,
-        `Auto-quote: GHS ${quote.estimate} (${quote.km} km @ GHS ${quote.vehicleRate}/km + base GHS ${quote.base}). MD/dispatcher to confirm.`,
+        `Auto-quote: GHS ${quote.estimate} (${quote.km} km @ GHS ${quote.vehicleRate}/km + base GHS ${quote.base} + fuel GHS ${quote.fuelCost} for ${quote.litres}L at ${quote.kmPerLitre} km/L). MD/dispatcher to confirm.`,
         session.id,
       ]
     );
