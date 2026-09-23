@@ -707,3 +707,35 @@ input[type="date"] { padding-right: 2.4rem; }
 .lx-row-name, .lx-row-desc, .lx-fare { overflow-wrap: break-word; }
 .lx-board-row { min-width: 0; }
 .lx-board-row > * { overflow-wrap: break-word; }
+
+/* ================= Metric status in the LX editorial language ================= */
+/* Replace candy pill badges + coloured edges with quiet print-style status marks.
+   Applies to the dashboard metric tiles (.m-status) across staff app. */
+
+.metric .m-status {
+  border-radius: 0;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid currentColor;
+  padding: 0.28rem 0.1rem 0;
+  letter-spacing: 0.09em;
+  font-weight: 600;
+  flex: 1;
+  text-align: right;
+  text-transform: uppercase;
+}
+.m-status.on { color: var(--good); }
+.m-status.below { color: var(--bad); }
+.m-status.neutral { color: var(--ink-soft); }
+
+/* The tile edge stays as the quiet signal, but thinner and inkier */
+.metric { border-left-width: 3px; }
+.metric.on { border-left-color: var(--good); }
+.metric.below { border-left-color: var(--bad); }
+.metric.neutral { border-left-color: var(--line-strong); }
+
+/* Metric result inherits no colour from status — figures stay ink */
+.metric .m-result { color: var(--ink); }
+
+/* LX portal pages: square badges already; ensure status text matches */
+.lx-page .m-status { border-radius: 0; }
