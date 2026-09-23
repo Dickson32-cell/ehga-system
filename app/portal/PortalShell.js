@@ -22,35 +22,45 @@ export default function PortalShell({ active, session, children }) {
   }
 
   return (
-    <div className="portal">
-      <header className="portal-top">
-        <Link href="/portal" className="portal-brand">
-          <b>EHGA Mobility</b>
-          <span>Customer Portal</span>
-        </Link>
-        <div className="portal-authnav">
-          <span className="portal-hello">{session.full_name}</span>
-          <button className="btn small secondary" type="button" onClick={logout}>
-            Sign out
-          </button>
+    <div className="lx">
+      <header className="lx-mast">
+        <div className="lx-mast-inner">
+          <Link href="/portal" className="lx-mark">
+            <span className="lx-mark-rule" />
+            EHGA<span className="lx-mark-thin">Mobility</span>
+          </Link>
+          <nav className="lx-mast-nav">
+            <span className="lx-mast-user">{session.full_name}</span>
+            <button className="lx-mast-link lx-as-btn" type="button" onClick={logout}>
+              Sign out
+            </button>
+          </nav>
         </div>
       </header>
 
-      <nav className="portal-nav" aria-label="Portal navigation">
-        {NAV.map((n) => (
-          <Link key={n.href} href={n.href} className={active === n.href ? "active" : ""}>
-            {n.label}
-          </Link>
-        ))}
+      <nav className="lx-tabs">
+        <div className="lx-tabs-inner">
+          {NAV.map((n) => (
+            <Link key={n.href} href={n.href} className={active === n.href ? "active" : ""}>
+              {n.label}
+            </Link>
+          ))}
+        </div>
       </nav>
 
-      <main className="portal-main">{children}</main>
+      <main className="lx-page">{children}</main>
 
-      <footer className="portal-footer">
-        <span>EHGA Mobility · Koforidua / Accra · All amounts in Ghana Cedis (GHS)</span>
-        <span>
-          Staff? <Link href="/login">Operations sign-in</Link>
-        </span>
+      <footer className="lx-foot">
+        <div className="lx-foot-inner">
+          <span className="lx-mark lx-mark--foot">
+            <span className="lx-mark-rule" />
+            EHGA<span className="lx-mark-thin">Mobility</span>
+          </span>
+          <span className="lx-foot-note">Koforidua · Eastern Region · Ghana · amounts in GHS</span>
+          <span className="lx-foot-links">
+            <Link href="/login">Staff sign-in</Link>
+          </span>
+        </div>
       </footer>
     </div>
   );
