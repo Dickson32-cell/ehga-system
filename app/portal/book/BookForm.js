@@ -21,6 +21,8 @@ export default function BookForm() {
     notes: "",
   });
   const [vehicles, setVehicles] = useState([]);
+  const [avail, setAvail] = useState(null);
+  const [availMsg, setAvailMsg] = useState("");
   const [done, setDone] = useState(null);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
@@ -31,6 +33,33 @@ export default function BookForm() {
       .then((j) => setVehicles(j.data || []))
       .catch(() => {});
   }, []);
+
+  // Live seat availability for the chosen date + route: which car fills up,
+  // how many seats remain ("Full", "2 seats left"), and what takes over next.
+  useEffect(() => {
+    if (!form.travel_date || !form.direction) {
+      setAvail(null);
+      setAvailMsg("");
+      return;
+    }
+    let live = true;
+    setAvailMsg("Checking seats…");
+    fetch(`/api/portal/bookings?date=${encodeURIComponent(form.travel_date)}&direction=${encodeURIComponent(form.direction)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!live) return;
+        if (j.data) {
+          setAvail(j.data);
+          setAvailMsg(
+            j.data.any_available
+              ? `${j.data.total_seats_left} seat${j.data.total_seats_left === 1 ? "" : "s"} still open across our cars.`
+              : "All cars are full for that date — try another date or send us a WhatsApp."
+          );
+        } else setAvailMsg("");
+      })
+      .catch(() => setAvailMsg(""));
+    return () => { live = false; };
+  }, [form.travel_date, form.direction]);
 
   async function submit(e) {
     e.preventDefault();
@@ -168,6 +197,25 @@ export default function BookForm() {
           <div className="panel-note" style={{ margin: "0.8rem 0" }}>
             Our fleet: {vehicles.length ? vehicles.map((v) => `${v.model || v.type} (${v.registration || v.vehicle_code})`).join(" · ") : "loading…"}
           </div>
+
+          {avail && avail.vehicles ? (
+            <div className="seat-availability" style={{ margin: "0.6rem 0 1rem" }}>
+              <div className="panel-note" style={{ fontWeight: 600 }}>{availMsg}</div>
+              <div className="seat-cards">
+                {avail.vehicles.map((v) => (
+                  <div
+                    key={v.vehicle_code}
+                    className={"seat-card" + (v.is_full ? " full" : "")}
+                  >
+                    <span className="seat-car">{v.model || v.type} · {v.registration || v.vehicle_code}</span>
+                    <span className={"seat-count" + (v.is_full ? " full" : v.seats_left <= 2 ? " low" : "")}>
+                      {v.label}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           <div className="actions">
             <button className="btn" type="submit" disabled={busy}>

@@ -2,6 +2,7 @@ import { apiHandler } from "@/lib/auth";
 import { requireCustomer } from "@/lib/customer-auth";
 import { query, tx } from "@/lib/db";
 import { waLink, waBookingText } from "@/lib/notify";
+import { availabilityForDate, assignBookingSeats } from "@/lib/seats";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,8 +14,22 @@ const ACTIVE_STATUSES = ["Pending", "Confirmed", "Boarded"];
  * Every query filters by customer_id = session.id: no customer can ever see
  * another customer's data.
  */
-export const GET = apiHandler(async () => {
+export const GET = apiHandler(async (req) => {
   const session = await requireCustomer();
+  const url = new URL(req.url);
+
+  // Seat availability view: ?date=YYYY-MM-DD&direction=... — what cars exist,
+  // how full each is ("Full", "2 seats left"), and whether booking is open.
+  const avDate = url.searchParams.get("date");
+  const avDir = url.searchParams.get("direction");
+  if (avDate && avDir) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(avDate)) {
+      return Response.json({ error: "Choose a valid travel date" }, { status: 400 });
+    }
+    const availability = await availabilityForDate(avDate, avDir);
+    return Response.json({ data: availability });
+  }
+
   const { rows } = await query(
     `SELECT b.id, b.booking_code, b.travel_date, b.direction, b.departure_time,
             b.seats, b.fare_per_seat, b.passenger_revenue, b.amount_paid, b.balance,
@@ -71,7 +86,18 @@ export const POST = apiHandler(async (req) => {
         session.id,
       ]
     );
-    return rows[0];
+    const booking = rows[0];
+
+    // Seat engine: put this booking on the first car with room (fills a car to
+    // its capacity, then the next available car becomes the bookable one).
+    const assign = await assignBookingSeats(client, {
+      travelDate,
+      direction,
+      seats,
+      excludeBookingId: booking.id,
+    });
+
+    return { ...booking, vehicle_id: assign.vehicle_code };
   });
 
   const { rows: wa } = await query("SELECT value FROM setup_kv WHERE key = 'whatsapp_line'");

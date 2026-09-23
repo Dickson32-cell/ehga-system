@@ -128,7 +128,6 @@ export default async function PortalHome() {
           </span>
           <span className="lx-foot-note">Koforidua · Eastern Region · Ghana</span>
           <span className="lx-foot-links">
-            <Link href="/login">Staff sign-in</Link>
             <Link href="/portal/track">Track</Link>
           </span>
         </div>

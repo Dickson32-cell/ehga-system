@@ -797,3 +797,18 @@ input[type="date"] { padding-right: 2.4rem; }
   /* Footer stacks vertically on phones */
   .lx-foot-inner { flex-direction: column; gap: 0.35rem; text-align: center; }
 }
+
+/* ================= Seat availability cards (Book a seat) ================= */
+.seat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.6rem; margin-top: 0.5rem; }
+.seat-card {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 0.6rem;
+  border: 1px solid var(--line); border-left: 4px solid var(--good);
+  background: var(--card); border-radius: var(--radius); padding: 0.6rem 0.8rem;
+  font-family: system-ui, sans-serif; font-size: 0.88rem;
+}
+.seat-card .seat-car { font-weight: 600; overflow-wrap: anywhere; }
+.seat-card .seat-count { white-space: nowrap; color: var(--good); font-weight: 600; }
+.seat-card .seat-count.low { color: #b98a2f; }
+.seat-card.full { border-left-color: var(--bad); opacity: 0.75; }
+.seat-card.full .seat-count { color: var(--bad); }
+@media (max-width: 640px) { .seat-cards { grid-template-columns: 1fr; } }

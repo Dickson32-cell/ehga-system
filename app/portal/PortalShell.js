@@ -103,9 +103,6 @@ export default function PortalShell({ active, session, children }) {
             EHGA<span className="lx-mark-thin">Mobility</span>
           </span>
           <span className="lx-foot-note">Koforidua · Eastern Region · Ghana · amounts in GHS</span>
-          <span className="lx-foot-links">
-            <Link href="/login">Staff sign-in</Link>
-          </span>
         </div>
       </footer>
     </div>
