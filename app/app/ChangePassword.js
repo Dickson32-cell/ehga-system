@@ -7,7 +7,7 @@ import { useState } from "react";
  * temporary password (must_change_password) or opened via "Account settings".
  * On success it reloads the app so the banner clears.
  */
-export default function ChangePassword({ required, onDone }) {
+export default function ChangePassword({ required }) {
   const [current, setCurrent] = useState("");
   const [next, setNext] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -29,7 +29,7 @@ export default function ChangePassword({ required, onDone }) {
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j.error || "Could not change password");
       setOkMsg(j.message || "Password changed");
-      if (onDone) setTimeout(onDone, 1200);
+      setTimeout(() => window.location.reload(), 1200);
     } catch (err) {
       setError(err.message);
     } finally { setBusy(false); }
