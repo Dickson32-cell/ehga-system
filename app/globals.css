@@ -571,3 +571,103 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .lx-display { font-size: 2rem; }
   .lx-display::after { margin-top: 0.8rem; }
 }
+
+/* ================= Staff app mobile ergonomics ================= */
+
+/* Nav wrapper: strip hidden on phones, drawer there instead */
+.mainnav-mobile { display: none; }
+@media (max-width: 640px) {
+  .mainnav-strip { display: none; }
+  .mainnav-mobile {
+    display: block;
+    background: var(--ink);
+    padding: 0.35rem 0.6rem;
+    position: sticky; top: 0; z-index: 39;
+  }
+  .mainnav-toggle {
+    display: flex; align-items: center; gap: 0.6rem;
+    width: 100%; background: transparent; border: 0; color: #e7e3d6;
+    font-family: system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
+    padding: 0.55rem 0.5rem; min-height: 44px; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mainnav-toggle:active { opacity: 0.75; }
+  .mainnav-current {
+    margin-left: auto; font-weight: 400; color: #b5af9f;
+    max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .mainnav-burger { display: inline-flex; flex-direction: column; gap: 3.5px; }
+  .mainnav-burger i { width: 18px; height: 2px; background: #e7e3d6; border-radius: 1px; display: block; }
+
+  .mainnav-drawer {
+    background: var(--ink);
+    padding: 0.2rem 0.5rem 0.7rem;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
+    position: sticky; top: 53px; z-index: 38;
+    border-bottom: 3px solid #cfa96b;
+  }
+  .drawer-link {
+    color: #d8d5cf; font-family: system-ui, sans-serif; font-size: 0.9rem;
+    padding: 0.75rem 0.7rem; min-height: 44px; display: flex; align-items: center;
+    border-bottom: 1px solid #2a2e33; border-radius: 3px;
+  }
+  .drawer-link:active { background: #2a2e33; }
+  .drawer-link.active { color: #fff; background: #2a2e33; box-shadow: inset 2px 0 0 #cfa96b; }
+}
+
+/* ---------- Tables become cards on phones ---------- */
+@media (max-width: 640px) {
+  /* Generic register tables: each row becomes a labelled card */
+  .tablewrap { border: 0; background: transparent; overflow: visible; }
+  .tablewrap table { display: block; }
+  .tablewrap thead { display: none; }
+  .tablewrap tbody { display: block; }
+  .tablewrap tr {
+    display: block;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--line-strong);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.7rem;
+  }
+  .tablewrap tr:hover { background: var(--card); }
+  .tablewrap td {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 0.8rem;
+    padding: 0.28rem 0; border-bottom: 1px dotted var(--line-soft, #e2e0da);
+    white-space: normal; text-align: right;
+  }
+  .tablewrap td:last-child { border-bottom: 0; }
+  .tablewrap td::before {
+    content: attr(data-label);
+    font-family: system-ui, sans-serif; font-size: 0.7rem; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--ink-faint);
+    text-align: left; flex: 1; min-width: 5.5rem;
+  }
+  .tablewrap td.num { text-align: right; }
+  /* Action buttons row at the bottom of each card */
+  .tablewrap td:last-child { justify-content: flex-end; gap: 0.4rem; }
+  .tablewrap td .btn { min-height: 36px; }
+}
+
+/* ---------- Dashboard tiles: phone gets key-figures priority ---------- */
+@media (max-width: 640px) {
+  .metric .m-label { font-size: 0.68rem; }
+  .metric .m-result { font-size: 1.3rem; }
+  .page-head .actions { width: 100%; }
+  .page-head .actions .btn { flex: 1; }
+}
+
+/* ---------- My Job / forms: sectioned panels stack cleanly ---------- */
+@media (max-width: 640px) {
+  .panel { padding: 0.95rem 0.95rem; }
+  .panel h2 { font-size: 1.1rem; }
+  .signoff-box .checkline { min-height: 40px; }
+  .fleet-row { font-size: 0.85rem; }
+  .map-big { height: 260px !important; }
+}
+
+/* ---------- Footer stacks ---------- */
+@media (max-width: 640px) {
+  .footer { flex-direction: column; gap: 0.3rem; text-align: center; padding: 0.9rem 1rem; }
+}

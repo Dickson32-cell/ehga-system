@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const LINKS = [
   { href: "/app", label: "Dashboard", roles: null },
@@ -23,15 +24,67 @@ const LINKS = [
   { href: "/app/staff", label: "Staff", roles: ["MANAGING_DIRECTOR"] },
 ];
 
+/**
+ * Desktop/tablet: the usual horizontal strip.
+ * Phone: links collapse into a slide-down menu behind a "Menu" button.
+ */
 export default function AppNav({ role }) {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+  const links = LINKS.filter((l) => !l.roles || l.roles.includes(role));
+
+  // Close the drawer whenever the page changes or Escape is pressed.
+  useEffect(() => { setOpen(false); }, [pathname]);
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
+
+  const current = links.find((l) => l.href === pathname);
+
   return (
-    <nav className="mainnav" aria-label="Register navigation">
-      {LINKS.filter((l) => !l.roles || l.roles.includes(role)).map((l) => (
-        <Link key={l.href} href={l.href} className={pathname === l.href ? "active" : ""}>
-          {l.label}
-        </Link>
-      ))}
+    <nav className="mainnav-wrap" aria-label="Register navigation">
+      {/* Phone-only menu bar */}
+      <div className="mainnav-mobile">
+        <button
+          type="button"
+          className="mainnav-toggle"
+          aria-expanded={open}
+          onClick={() => setOpen((o) => !o)}
+        >
+          <span className="mainnav-burger" aria-hidden="true">
+            <i /><i /><i />
+          </span>
+          Menu
+          {current ? <span className="mainnav-current">{current.label}</span> : null}
+        </button>
+      </div>
+
+      {open ? (
+        <div className="mainnav-drawer">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className={pathname === l.href ? "drawer-link active" : "drawer-link"}
+              onClick={() => setOpen(false)}
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
+      ) : null}
+
+      {/* Tablet/desktop strip (unchanged behaviour) */}
+      <div className="mainnav mainnav-strip">
+        {links.map((l) => (
+          <Link key={l.href} href={l.href} className={pathname === l.href ? "active" : ""}>
+            {l.label}
+          </Link>
+        ))}
+      </div>
     </nav>
   );
 }
