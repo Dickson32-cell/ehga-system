@@ -1,6 +1,5 @@
 import bcrypt from "bcryptjs";
 import { findUserByUsername, createSessionToken, SESSION_COOKIE, apiHandler } from "@/lib/auth";
-import { query } from "@/lib/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,11 +21,11 @@ export const POST = apiHandler(async (req) => {
     return Response.json({ error: "Invalid username or password" }, { status: 401 });
   }
 
-  await query("UPDATE app_user SET created_at = created_at WHERE id = $1", [user.id]);
   const token = await createSessionToken(user);
   const res = Response.json({
     ok: true,
     user: { username: user.username, full_name: user.full_name, role: user.role },
+    must_change_password: user.must_change_password === true,
   });
   res.headers.append(
     "Set-Cookie",

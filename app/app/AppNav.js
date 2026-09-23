@@ -21,7 +21,7 @@ const LINKS = [
   { href: "/app/school", label: "School Transport", roles: null },
   { href: "/app/cash", label: "Cash Reconciliation", roles: null },
   { href: "/app/setup", label: "Setup", roles: ["MANAGING_DIRECTOR", "OPERATIONS_MANAGER"] },
-  { href: "/app/staff", label: "Staff", roles: ["MANAGING_DIRECTOR"] },
+  { href: "/app/staff", label: "Staff", roles: ["MANAGING_DIRECTOR", "OPERATIONS_MANAGER"] },
 ];
 
 /**

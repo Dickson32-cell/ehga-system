@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ChangePassword from "../ChangePassword";
 
 /**
  * My job (drivers & riders): today's assignment, one-tap "allow location +
@@ -131,6 +132,13 @@ export default function JobClient({ session }) {
 
   return (
     <>
+      {session.must_change_password ? (
+        <ChangePassword
+          required
+          onDone={() => window.location.reload()}
+        />
+      ) : null}
+
       <div className="page-head">
         <div>
           <h1>My job — {session.full_name}</h1>
