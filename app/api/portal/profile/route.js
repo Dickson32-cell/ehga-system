@@ -17,7 +17,7 @@ export const GET = apiHandler(async () => {
   const me = await requireCustomer();
   const { rows } = await query(
     `SELECT id, full_name, phone, active, created_at,
-            avatar_mimetype IS NOT NULL AND avatar_data IS NOT NULL AS has_avatar
+            (avatar_mimetype IS NOT NULL AND avatar_data IS NOT NULL) AS has_avatar
        FROM customer WHERE id = $1`,
     [me.id]
   );
@@ -38,7 +38,7 @@ export const GET = apiHandler(async () => {
     full_name: c.full_name,
     phone: c.phone,
     member_since: c.created_at,
-    has_avatar: !!c.avatar_mimetype,
+    has_avatar: !!c.has_avatar,
     activity: counts[0] || { bookings: 0, parcels: 0, hires: 0, school: 0 },
   });
 });
