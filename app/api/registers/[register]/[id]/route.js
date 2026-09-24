@@ -1,6 +1,7 @@
 import { REGISTERS } from "@/lib/registers";
 import { requireSession, requireRole, apiHandler } from "@/lib/auth";
 import { query, tx } from "@/lib/db";
+import { sendPush } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -139,8 +140,77 @@ export const PATCH = apiHandler(async (req, ctx) => {
     return row;
   });
 
+  // Fire-and-forget push alerts (never block or fail the save).
+  notifyRegisterChange(regDef.table, result, body).catch(() => {});
+
   return Response.json({ data: result });
 });
+
+/**
+ * Push notifications on meaningful register changes. Best-effort: a failed
+ * push never blocks the operation itself.
+ */
+async function notifyRegisterChange(table, row, body) {
+  if (!row) return;
+  const code = row.booking_code || row.parcel_code || row.dispatch_code || row.hire_code || row.student_code || "";
+
+  if (table === "booking" && body.status) {
+    if (row.customer_id && body.status !== "Pending") {
+      await sendPush("customer", row.customer_id, {
+        title: `Booking ${code}: ${body.status}`,
+        body:
+          body.status === "Confirmed"
+            ? "Your seat is confirmed. See you at the pickup point."
+            : body.status === "Boarded"
+              ? "You are marked as boarded — have a safe trip."
+              : body.status === "Completed"
+                ? "Trip completed. Thank you for riding with EHGA."
+                : `Your booking is now ${body.status}.`,
+        url: "/portal/dashboard",
+      });
+    }
+  }
+
+  if (table === "parcel" && body.status && row.customer_id) {
+    await sendPush("customer", row.customer_id, {
+      title: `Parcel ${code}: ${body.status}`,
+      body: `Your parcel status is now ${body.status}.`,
+      url: "/portal/track",
+    });
+  }
+
+  if (table === "dispatch" && body.decision === "Go" && row.vehicle_id) {
+    const v = await query(
+      "SELECT assigned_driver FROM vehicle WHERE vehicle_code = $1",
+      [row.vehicle_code || row.vehicle_id]
+    );
+    const driver = v.rows[0]?.assigned_driver;
+    if (driver) {
+      const u = await query(
+        "SELECT id FROM app_user WHERE full_name = $1 AND active = TRUE",
+        [driver]
+      );
+      if (u.rows[0]) {
+        await sendPush("staff", u.rows[0].id, {
+          title: `Dispatch ${code}: GO`,
+          body: `You are on the ${row.direction || ""} run today. Check My Job for details.`,
+          url: "/app/my-job",
+        });
+      }
+    }
+  }
+
+  if (table === "incident" && body.severity === "Severe") {
+    const mds = await query("SELECT id FROM app_user WHERE role = 'MANAGING_DIRECTOR' AND active = TRUE");
+    for (const md of mds.rows) {
+      await sendPush("staff", md.id, {
+        title: "Severe incident reported",
+        body: row.incident_code ? `Incident ${row.incident_code} needs your review.` : "A severe incident was reported.",
+        url: "/app/incidents",
+      });
+    }
+  }
+}
 
 /** Soft delete: row stays in DB (audit trail) but disappears from all lists. */
 export const DELETE = apiHandler(async (req, ctx) => {

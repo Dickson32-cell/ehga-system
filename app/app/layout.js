@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import AppNav from "./AppNav";
 import LogoutButton from "./LogoutButton";
 import ChangePassword from "./ChangePassword";
+import EnableNotifications from "./EnableNotifications";
 
 export const dynamic = "force-dynamic";
 
@@ -43,6 +44,7 @@ export default async function AppLayout({ children }) {
       <footer className="footer">
         <span>EHGA Mobility - Koforidua / Accra passenger, parcel and private-hire operations</span>
         <span>All amounts in Ghana Cedis (GHS)</span>
+        <EnableNotifications />
       </footer>
     </div>
   );

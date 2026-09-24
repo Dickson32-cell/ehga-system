@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import EnableNotifications from "@/app/app/EnableNotifications";
 
 /**
  * Customer profile: photo (upload / replace / remove), editable full name,
@@ -109,6 +110,11 @@ export default function ProfileClient({ session }) {
 
       {error ? <div className="form-error">{error}</div> : null}
       {msg ? <div className="form-ok">{msg}</div> : null}
+
+      <div className="panel">
+        <h2>Notifications</h2>
+        <EnableNotifications />
+      </div>
 
       <div className="panel">
         <h2>Profile photo</h2>

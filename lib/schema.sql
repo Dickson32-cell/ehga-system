@@ -396,6 +396,21 @@ CREATE TABLE IF NOT EXISTS customer (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+
+CREATE TABLE IF NOT EXISTS push_subscription (
+  id          SERIAL PRIMARY KEY,
+  audience    TEXT NOT NULL CHECK (audience IN ('staff', 'customer')),
+  subject_id  INTEGER NOT NULL,
+  endpoint    TEXT NOT NULL UNIQUE,
+  p256dh      TEXT NOT NULL,
+  auth        TEXT NOT NULL,
+  user_agent  TEXT,
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  last_error  TEXT,
+  active      BOOLEAN NOT NULL DEFAULT TRUE
+);
+CREATE INDEX IF NOT EXISTS push_sub_subject_idx ON push_subscription (audience, subject_id);
+
 ALTER TABLE customer ADD COLUMN IF NOT EXISTS avatar_mimetype TEXT;
 ALTER TABLE customer ADD COLUMN IF NOT EXISTS avatar_data TEXT;
 ALTER TABLE customer ADD COLUMN IF NOT EXISTS avatar_updated_at TIMESTAMPTZ;
