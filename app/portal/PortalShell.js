@@ -11,6 +11,7 @@ const NAV = [
   { href: "/portal/hire", label: "Private hire" },
   { href: "/portal/school", label: "School run" },
   { href: "/portal/track", label: "Track" },
+  { href: "/portal/profile", label: "Profile" },
 ];
 
 export default function PortalShell({ active, session, children }) {

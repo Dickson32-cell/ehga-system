@@ -396,6 +396,9 @@ CREATE TABLE IF NOT EXISTS customer (
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS avatar_mimetype TEXT;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS avatar_data TEXT;
+ALTER TABLE customer ADD COLUMN IF NOT EXISTS avatar_updated_at TIMESTAMPTZ;
 ALTER TABLE booking      ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);
 ALTER TABLE parcel       ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);
 ALTER TABLE private_hire ADD COLUMN IF NOT EXISTS customer_id INTEGER REFERENCES customer(id);

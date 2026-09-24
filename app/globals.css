@@ -812,3 +812,56 @@ input[type="date"] { padding-right: 2.4rem; }
 .seat-card.full { border-left-color: var(--bad); opacity: 0.75; }
 .seat-card.full .seat-count { color: var(--bad); }
 @media (max-width: 640px) { .seat-cards { grid-template-columns: 1fr; } }
+
+
+/* --- Customer profile --- */
+.avatar {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 0;
+  border: 2px solid var(--lx-line-soft);
+  background: #fff;
+  flex: none;
+}
+.avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.06em;
+  color: var(--lx-ink);
+  background: var(--lx-paper);
+}
+.profile-row {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.profile-avatar-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 240px;
+}
+.ledger-list {
+  margin: 0 0 1rem;
+  border-top: 2px solid var(--lx-line-soft);
+}
+.ledger-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--lx-line-soft);
+}
+.ledger-row dt {
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.ledger-row dd { margin: 0; text-align: right; }
