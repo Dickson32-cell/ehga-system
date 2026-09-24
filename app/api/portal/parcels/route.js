@@ -2,6 +2,7 @@ import { apiHandler } from "@/lib/auth";
 import { requireCustomer } from "@/lib/customer-auth";
 import { query, tx } from "@/lib/db";
 import { waLink, waParcelText } from "@/lib/notify";
+import { sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -72,6 +73,13 @@ export const POST = apiHandler(async (req) => {
     );
     return rows[0];
   });
+
+  // Staff alert (fire-and-forget): office sees the new work instantly.
+  sendPushToRoles(["OPERATIONS_MANAGER", "DISPATCHER", "MANAGING_DIRECTOR"], {
+    title: `New parcel ${result.parcel_code}`,
+    body: `A parcel booking was recorded and is awaiting pickup.`,
+    url: "/app/parcels",
+  }).catch(() => {});
 
   const { rows: wa } = await query("SELECT value FROM setup_kv WHERE key = 'whatsapp_line'");
   return Response.json(

@@ -1,6 +1,7 @@
 import { apiHandler } from "@/lib/auth";
 import { requireCustomer } from "@/lib/customer-auth";
 import { query, tx } from "@/lib/db";
+import { sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -67,6 +68,13 @@ export const POST = apiHandler(async (req) => {
     );
     return rows[0];
   });
+
+  // Staff alert (fire-and-forget): office sees the school registration instantly.
+  sendPushToRoles(["OPERATIONS_MANAGER", "DISPATCHER", "MANAGING_DIRECTOR"], {
+    title: `New school run ${result.student_code || ""}`.trim(),
+    body: "A new school transport registration was recorded.",
+    url: "/app/school",
+  }).catch(() => {});
 
   return Response.json(
     {

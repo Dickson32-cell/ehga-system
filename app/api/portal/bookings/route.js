@@ -3,6 +3,7 @@ import { requireCustomer } from "@/lib/customer-auth";
 import { query, tx } from "@/lib/db";
 import { waLink, waBookingText } from "@/lib/notify";
 import { availabilityForDate, assignBookingSeats } from "@/lib/seats";
+import { sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -101,6 +102,14 @@ export const POST = apiHandler(async (req) => {
   });
 
   const { rows: wa } = await query("SELECT value FROM setup_kv WHERE key = 'whatsapp_line'");
+
+  // Staff alert (fire-and-forget): office gets a push the moment a customer books.
+  sendPushToRoles(["OPERATIONS_MANAGER", "DISPATCHER", "MANAGING_DIRECTOR"], {
+    title: `New booking ${result.booking_code}`,
+    body: `${result.direction || "Route TBA"} on ${String(result.travel_date).slice(0, 10)} — needs a Go decision.`,
+    url: "/app/bookings",
+  }).catch(() => {});
+
   return Response.json(
     {
       data: result,

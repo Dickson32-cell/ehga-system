@@ -1,6 +1,7 @@
 import { REGISTERS } from "@/lib/registers";
 import { requireSession, requireRole, apiHandler } from "@/lib/auth";
 import { query, tx } from "@/lib/db";
+import { sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -191,5 +192,48 @@ export const POST = apiHandler(async (req, ctx) => {
     return rows[0];
   });
 
+  // Staff alerts for new customer-facing work. Fire-and-forget.
+  notifyNewRow(regDef.table, result).catch(() => {});
+
   return Response.json({ data: result }, { status: 201 });
 });
+
+/**
+ * Push alerts to the office when a new customer order/row arrives.
+ * Operations + Dispatch act on them; the CEO sees everything.
+ */
+async function notifyNewRow(table, row) {
+  if (!row) return;
+  const roles = ["OPERATIONS_MANAGER", "DISPATCHER", "MANAGING_DIRECTOR"];
+  if (table === "booking") {
+    await sendPushToRoles(roles, {
+      title: `New booking ${row.booking_code}`,
+      body: `${row.direction || "Route TBA"} on ${row.travel_date ? String(row.travel_date).slice(0, 10) : "TBA"} — needs a Go decision.`,
+      url: "/app/bookings",
+    });
+  } else if (table === "parcel") {
+    await sendPushToRoles(roles, {
+      title: `New parcel ${row.parcel_code}`,
+      body: "A parcel booking was recorded and is awaiting pickup.",
+      url: "/app/parcels",
+    });
+  } else if (table === "private_hire") {
+    await sendPushToRoles(roles, {
+      title: `Private hire request ${row.hire_code || ""}`.trim(),
+      body: `${row.pickup || ""} to ${row.destination || ""} — quote and assign a car.`,
+      url: "/app/private-hire",
+    });
+  } else if (table === "school_student") {
+    await sendPushToRoles(roles, {
+      title: `New school run ${row.student_code || ""}`.trim(),
+      body: "A new school transport registration was recorded.",
+      url: "/app/school",
+    });
+  } else if (table === "incident") {
+    await sendPushToRoles(["MANAGING_DIRECTOR", "OPERATIONS_MANAGER"], {
+      title: `Incident ${row.incident_code || ""} reported`.trim(),
+      body: `${row.type || "Incident"} — severity ${row.severity || "TBA"}.`,
+      url: "/app/incidents",
+    });
+  }
+}

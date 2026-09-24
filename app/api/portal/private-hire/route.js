@@ -2,6 +2,7 @@ import { apiHandler } from "@/lib/auth";
 import { requireCustomer } from "@/lib/customer-auth";
 import { query, tx } from "@/lib/db";
 import { autoQuote } from "@/lib/quote";
+import { sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -79,6 +80,13 @@ export const POST = apiHandler(async (req) => {
     );
     return rows[0];
   });
+
+  // Staff alert (fire-and-forget): office sees the hire request instantly.
+  sendPushToRoles(["OPERATIONS_MANAGER", "DISPATCHER", "MANAGING_DIRECTOR"], {
+    title: `Private hire request ${result.hire_code || ""}`.trim(),
+    body: `${result.pickup || ""} to ${result.destination || ""} — quote and assign a car.`,
+    url: "/app/private-hire",
+  }).catch(() => {});
 
   return Response.json(
     {

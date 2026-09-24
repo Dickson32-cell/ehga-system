@@ -26,7 +26,11 @@ export const POST = apiHandler(async (req) => {
     return Response.json({ error: "Sign in first" }, { status: 401 });
   }
   const audience = staff ? "staff" : "customer";
-  const subjectId = staff ? staff.id : customer.id;
+  // Staff JWT carries the user id in `sub` (no `id` claim); customer sessions resolve id.
+  const subjectId = staff ? Number(staff.sub) : customer.id;
+  if (!Number.isInteger(subjectId)) {
+    return Response.json({ error: "Invalid session subject" }, { status: 401 });
+  }
 
   await query(
     `INSERT INTO push_subscription (audience, subject_id, endpoint, p256dh, auth, user_agent, active)

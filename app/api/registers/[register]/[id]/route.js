@@ -1,7 +1,7 @@
 import { REGISTERS } from "@/lib/registers";
 import { requireSession, requireRole, apiHandler } from "@/lib/auth";
 import { query, tx } from "@/lib/db";
-import { sendPush } from "@/lib/push";
+import { sendPush, sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -153,6 +153,14 @@ export const PATCH = apiHandler(async (req, ctx) => {
 async function notifyRegisterChange(table, row, body) {
   if (!row) return;
   const code = row.booking_code || row.parcel_code || row.dispatch_code || row.hire_code || row.student_code || "";
+
+  if (table === "booking" && body.status === "Cancelled") {
+    await sendPushToRoles(["OPERATIONS_MANAGER", "DISPATCHER", "MANAGING_DIRECTOR"], {
+      title: `Booking ${code} cancelled`,
+      body: row.direction ? `${row.direction} — release the seat back to the pool.` : "A booking was cancelled; free the seat.",
+      url: "/app/bookings",
+    });
+  }
 
   if (table === "booking" && body.status) {
     if (row.customer_id && body.status !== "Pending") {

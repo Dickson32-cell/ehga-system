@@ -1,5 +1,6 @@
 import { apiHandler, requireRole } from "@/lib/auth";
 import { query } from "@/lib/db";
+import { sendPush, sendPushToRoles } from "@/lib/push";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,7 +34,7 @@ export const GET = apiHandler(async (req) => {
 
 /** PATCH { id, status } - manually mark paid/failed after verifier confirmation. */
 export const PATCH = apiHandler(async (req) => {
-  await requireRole("MANAGING_DIRECTOR", "ACCOUNTANT");
+  const session = await requireRole("MANAGING_DIRECTOR", "ACCOUNTANT");
   const body = await req.json().catch(() => ({}));
   const id = parseInt(body.id, 10);
   const status = String(body.status || "");
@@ -59,6 +60,20 @@ export const PATCH = apiHandler(async (req) => {
     const m = map[t.subject_type];
     if (m) {
       await query(`UPDATE ${m[0]} SET ${m[1]} = ${m[1]} + $1 WHERE id = $2`, [t.amount, t.subject_id]);
+      // Confirm to the payer + keep the office in the loop. Best-effort.
+      const own = await query(`SELECT customer_id FROM ${m[0]} WHERE id = $1`, [t.subject_id]);
+      if (own.rows[0]?.customer_id) {
+        sendPush("customer", own.rows[0].customer_id, {
+          title: "Payment received",
+          body: `We received your GHS ${Number(t.amount).toFixed(2)} payment. Thank you.`,
+          url: "/portal/dashboard",
+        }).catch(() => {});
+      }
+      sendPushToRoles(["ACCOUNTANT", "MANAGING_DIRECTOR"], {
+        title: `Payment recorded — GHS ${Number(t.amount).toFixed(2)}`,
+        body: `${t.subject_type === "BOOKING" ? "Booking" : t.subject_type === "PARCEL" ? "Parcel" : t.subject_type === "PRIVATE_HIRE" ? "Private hire" : "School run"} payment verified by ${session.full_name || "the office"}.`,
+        url: "/app/momo",
+      }).catch(() => {});
     }
   }
   return Response.json({ data: rows[0] });
