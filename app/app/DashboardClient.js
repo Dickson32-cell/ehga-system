@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 
 const DEFAULT_FROM = "2026-10-01";
 const DEFAULT_TO = "2026-12-31";
@@ -49,6 +50,9 @@ export default function DashboardClient() {
   useEffect(() => {
     load(DEFAULT_FROM, DEFAULT_TO);
   }, []);
+
+  // Live board: refresh every 20 s (skipped while the user picks a period).
+  useAutoRefresh(() => load(from, to), 20000);
 
   return (
     <>

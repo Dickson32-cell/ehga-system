@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 
 /**
  * My job (drivers & riders): today's assignment, one-tap "allow location +
@@ -27,30 +28,33 @@ export default function JobClient({ session }) {
   const watchId = useRef(null);
   const isField = session.role === "DRIVER" || session.role === "RIDER";
 
-  useEffect(() => {
-    fetch("/api/registers/dispatch?limit=30")
+  async function loadJob() {
+    const dj = await fetch("/api/registers/dispatch?limit=30")
       .then((r) => r.json())
-      .then((j) => {
-        const todayStr = new Date().toISOString().slice(0, 10);
-        const mine = (j.data || []).filter(
-          (d) =>
-            !d.deleted &&
-            d.date === todayStr &&
-            (d.driver === session.full_name || d.driver === session.username)
-        );
-        setToday(mine);
-        if (mine.length) loadSignoff(mine[0].id);
-      })
-      .catch(() => {});
+      .catch(() => ({ data: [] }));
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const mine = ((dj && dj.data) || []).filter(
+      (d) =>
+        !d.deleted &&
+        d.date === todayStr &&
+        (d.driver === session.full_name || d.driver === session.username)
+    );
+    setToday(mine);
+    if (mine.length) loadSignoff(mine[0].id);
 
-    fetch("/api/registers/fleet?limit=30")
+    const fj = await fetch("/api/registers/fleet?limit=30")
       .then((r) => r.json())
-      .then((j) => {
-        const mine = (j.data || []).find((v) => v.assigned_driver === session.full_name);
-        setAssigned(mine || null);
-      })
-      .catch(() => {});
+      .catch(() => ({ data: [] }));
+    const mineV = ((fj && fj.data) || []).find((v) => v.assigned_driver === session.full_name);
+    setAssigned(mineV || null);
+  }
+
+  useEffect(() => {
+    loadJob();
   }, [session.full_name, session.username]);
+
+  // Assignments appear when the office books them — refresh every 20 s.
+  useAutoRefresh(loadJob, 20000);
 
   async function loadSignoff(dispatchId) {
     const res = await fetch(`/api/dispatch/signoff?dispatch_id=${dispatchId}`);

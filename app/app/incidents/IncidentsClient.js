@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 
 const TYPES = ["Accident", "Breakdown", "Tyre", "Engine", "Delay", "Customer complaint", "Cargo damage", "Other"];
 const SEVERITIES = ["Minor", "Moderate", "Severe"];
@@ -38,6 +39,9 @@ export default function IncidentsClient({ role, fullName }) {
       .then((j) => setVehicles(j.data || []))
       .catch(() => {});
   }, []);
+
+  // Incident list updates as staff report from the field — refresh every 30 s.
+  useAutoRefresh(load, 30000);
 
   async function submit(e) {
     e.preventDefault();

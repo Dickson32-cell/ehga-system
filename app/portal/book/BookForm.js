@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 import Link from "next/link";
 
 const DIRECTIONS = [
@@ -36,30 +37,34 @@ export default function BookForm() {
 
   // Live seat availability for the chosen date + route: which car fills up,
   // how many seats remain ("Full", "2 seats left"), and what takes over next.
-  useEffect(() => {
-    if (!form.travel_date || !form.direction) {
+  async function loadAvailability(date, direction, announce) {
+    if (!date || !direction) {
       setAvail(null);
       setAvailMsg("");
       return;
     }
-    let live = true;
-    setAvailMsg("Checking seats…");
-    fetch(`/api/portal/bookings?date=${encodeURIComponent(form.travel_date)}&direction=${encodeURIComponent(form.direction)}`)
-      .then((r) => r.json())
-      .then((j) => {
-        if (!live) return;
-        if (j.data) {
-          setAvail(j.data);
-          setAvailMsg(
-            j.data.any_available
-              ? `${j.data.total_seats_left} seat${j.data.total_seats_left === 1 ? "" : "s"} still open across our cars.`
-              : "All cars are full for that date — try another date or send us a WhatsApp."
-          );
-        } else setAvailMsg("");
-      })
-      .catch(() => setAvailMsg(""));
-    return () => { live = false; };
+    if (announce) setAvailMsg("Checking seats…");
+    try {
+      const j = await fetch(`/api/portal/bookings?date=${encodeURIComponent(date)}&direction=${encodeURIComponent(direction)}`).then((r) => r.json());
+      if (j.data) {
+        setAvail(j.data);
+        setAvailMsg(
+          j.data.any_available
+            ? `${j.data.total_seats_left} seat${j.data.total_seats_left === 1 ? "" : "s"} still open across our cars.`
+            : "All cars are full for that date — try another date or send us a WhatsApp."
+        );
+      } else if (announce) setAvailMsg("");
+    } catch {
+      if (announce) setAvailMsg("");
+    }
+  }
+
+  useEffect(() => {
+    loadAvailability(form.travel_date, form.direction, true);
   }, [form.travel_date, form.direction]);
+
+  // Seats fill while the customer decides — refresh availability every 30 s.
+  useAutoRefresh(() => loadAvailability(form.travel_date, form.direction, false), 30000);
 
   async function submit(e) {
     e.preventDefault();

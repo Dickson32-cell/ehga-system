@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 
 /** MoMo control panel: payment number (CEO-editable) + transactions queue. */
 export default function MomoClient({ role }) {
@@ -21,6 +22,9 @@ export default function MomoClient({ role }) {
   useEffect(() => {
     load();
   }, []);
+
+  // Payment queue updates as customers pay — refresh every 20 s.
+  useAutoRefresh(load, 20000);
 
   async function mark(id, status) {
     setError("");

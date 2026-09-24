@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 
 /**
  * Fleet Tracker (diagram: "Live map of every vehicle, staff side").
@@ -14,28 +15,26 @@ export default function TrackerClient({ role }) {
   const [history, setHistory] = useState([]);
   const [lastFetch, setLastFetch] = useState(null);
 
-  useEffect(() => {
-    let stop = false;
-    async function poll() {
-      try {
-        const res = await fetch("/api/tracking/live");
-        const j = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(j.error || "Could not load tracker");
-        if (!stop) {
-          setRows(j.data || []);
-          setLastFetch(new Date());
-        }
-      } catch (e) {
-        if (!stop) setError(e.message);
-      }
+  async function poll() {
+    try {
+      const res = await fetch("/api/tracking/live");
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error || "Could not load tracker");
+      setRows(j.data || []);
+      setLastFetch(new Date());
+      setError("");
+    } catch (e) {
+      setError(e.message);
     }
+  }
+
+  useEffect(() => {
     poll();
-    const t = setInterval(poll, 15000);
-    return () => {
-      stop = true;
-      clearInterval(t);
-    };
   }, []);
+
+  // Live GPS board: refresh every 15 s; the hook pauses while the tab is hidden
+  // and catches up the moment the screen comes back.
+  useAutoRefresh(poll, 15000);
 
   async function openVehicle(code) {
     setSelected(code);

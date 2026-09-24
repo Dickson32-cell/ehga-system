@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 
 /**
  * Customer tracking: polls /api/portal/tracking (own records ONLY) and shows
@@ -12,28 +13,25 @@ export default function TrackClient({ focusCode }) {
   const [error, setError] = useState("");
   const [now, setNow] = useState(null);
 
-  useEffect(() => {
-    let stop = false;
-    async function poll() {
-      try {
-        const res = await fetch("/api/portal/tracking");
-        const j = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(j.error || "Could not load tracking");
-        if (!stop) {
-          setRows(j.data || []);
-          setNow(new Date());
-        }
-      } catch (e) {
-        if (!stop) setError(e.message);
-      }
+  async function poll() {
+    try {
+      const res = await fetch("/api/portal/tracking");
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(j.error || "Could not load tracking");
+      setRows(j.data || []);
+      setNow(new Date());
+      setError("");
+    } catch (e) {
+      setError(e.message);
     }
+  }
+
+  useEffect(() => {
     poll();
-    const t = setInterval(poll, 15000); // live: poll every 15s
-    return () => {
-      stop = true;
-      clearInterval(t);
-    };
   }, []);
+
+  // Live trip tracking — refresh every 15 s while the screen is open.
+  useAutoRefresh(poll, 15000);
 
   if (error) return <div className="form-error">{error}</div>;
   if (!rows) return <p className="hint">Loading tracking…</p>;

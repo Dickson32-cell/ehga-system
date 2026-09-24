@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import useAutoRefresh from "@/lib/useAutoRefresh";
 import Link from "next/link";
 
 const STATUS_BADGE = {
@@ -107,26 +108,34 @@ export default function PortalDashboardClient({ session }) {
   const [error, setError] = useState("");
   const [rated, setRated] = useState({});
 
-  useEffect(() => {
+  async function loadTab(current) {
     const url =
-      tab === "bookings"
+      current === "bookings"
         ? "/api/portal/bookings"
-        : tab === "parcels"
+        : current === "parcels"
           ? "/api/portal/parcels"
-          : tab === "hires"
+          : current === "hires"
             ? "/api/portal/private-hire"
             : "/api/portal/school";
+    try {
+      const j = await fetch(url).then((r) => r.json());
+      if (j.error) throw new Error(j.error);
+      setRows(j.data || []);
+      setError("");
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     setLoading(true);
-    setError("");
-    fetch(url)
-      .then((r) => r.json())
-      .then((j) => {
-        if (j.error) throw new Error(j.error);
-        setRows(j.data || []);
-      })
-      .catch((e) => setError(e.message))
-      .finally(() => setLoading(false));
+    loadTab(tab);
   }, [tab]);
+
+  // Statuses change when the office confirms or dispatches — refresh every 20 s.
+  useAutoRefresh(() => loadTab(tab), 20000);
 
   const codeField = {
     bookings: "booking_code",
