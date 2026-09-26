@@ -49,6 +49,19 @@ export default async function PortalHome() {
               )}
               <Link className="lx-btn-line" href="/portal/track">Track a trip</Link>
             </div>
+
+            {/* ---- Fleet car: the corridor sedan, specimen on the page ---- */}
+            <div className="lx-hero-car">
+              <img
+                src="/hero-sedan.png"
+                alt="EHGA Mobility fleet sedan"
+                width={619}
+                height={221}
+              />
+              <p className="lx-hero-car-cap">
+                On the corridor — Koforidua <i>→</i> Accra · seats from <b>GHS 90</b> · tracked live
+              </p>
+            </div>
           </div>
 
           <div className="lx-board-panel">

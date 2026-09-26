@@ -356,6 +356,17 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .lx-board-fare { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
 .lx-board-foot { padding: 0.7rem 1rem; font-size: 0.8rem; color: var(--lx-ink-3); font-style: italic; }
 
+/* Hero car: fleet sedan specimen under the departure-board headline */
+.lx-hero-car { margin-top: 2.2rem; border-top: 1px solid var(--lx-line-soft); padding-top: 1.4rem; }
+.lx-hero-car img { display: block; width: min(430px, 88%); height: auto; }
+.lx-hero-car-cap {
+  display: inline-block; margin-top: 0.6rem; padding-top: 0.4rem;
+  border-top: 2px solid var(--lx-gold);
+  font-size: 0.86rem; font-style: italic; color: var(--lx-ink-2);
+}
+.lx-hero-car-cap i { color: var(--lx-gold); font-style: normal; padding: 0 0.15rem; }
+.lx-hero-car-cap b { color: var(--lx-ink); font-variant-numeric: tabular-nums; }
+
 /* Ledger rows */
 .lx-ledger { max-width: 1180px; margin: 0 auto; padding: 2.2rem 1.4rem 1rem; border-top: 2px solid var(--lx-line); }
 .lx-ledger-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
