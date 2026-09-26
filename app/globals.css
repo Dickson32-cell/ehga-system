@@ -358,43 +358,7 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* Hero car: fleet sedan specimen under the departure-board headline */
 .lx-hero-car { margin-top: 2.2rem; border-top: 1px solid var(--lx-line-soft); padding-top: 1.4rem; }
-/* aspect-ratio reserves the scene box BEFORE the PNG loads — % positions of the
-   wheel sprites never resolve against a collapsed box (the detach-on-refresh bug) */
-.lx-hero-car-scene { position: relative; width: min(430px, 88%); aspect-ratio: 619 / 221; }
-.lx-hero-car-body { position: absolute; inset: 0; width: 100%; height: 100%; }
-
-/* Wheel sprites sit exactly over the baked-in wheels — centers measured from the
-   artwork to the pixel, sprite center == wheel center by construction (no wobble).
-   Car travels left: wheels spin counter-clockwise at the rolling speed the road
-   dashes imply (v = ω·r), so the car neither skids nor glides. */
-.lx-wheel {
-  position: absolute; transform: translate(-50%, -50%);
-  animation: lx-wheel-spin 1.35s linear infinite;
-  will-change: transform;
-}
-.lx-wheel--rear  { width: 13.89%; left: 17.33%; top: 77.41%; }
-.lx-wheel--front { width: 13.89%; left: 79.77%; top: 76.69%; }
-@keyframes lx-wheel-spin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(-360deg); }
-}
-
-/* Road: thin ink rule with gold dashes streaming under the car.
-   Dash speed matches wheel surface speed: wheel 13.89% of 430px ≈ 59.7px dia
-   → 187.6px per 1.35s ≈ 139px/s; 104px dash period → 0.75s. */
-.lx-hero-road {
-  width: min(430px, 88%); height: 3px; margin-top: 2px;
-  background: repeating-linear-gradient(90deg, var(--lx-gold) 0 52px, transparent 52px 104px);
-  background-size: 104px 3px; background-repeat: repeat-x;
-  animation: lx-road-move 0.75s linear infinite;
-}
-@keyframes lx-road-move {
-  from { background-position: 0 0; }
-  to   { background-position: 104px 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .lx-wheel, .lx-hero-road { animation: none; }
-}
+.lx-hero-car-body { display: block; width: min(430px, 88%); height: auto; }
 
 .lx-hero-car-cap {
   display: inline-block; margin-top: 0.6rem; padding-top: 0.4rem;

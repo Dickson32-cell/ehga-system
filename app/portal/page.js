@@ -50,20 +50,15 @@ export default async function PortalHome() {
               <Link className="lx-btn-line" href="/portal/track">Track a trip</Link>
             </div>
 
-            {/* ---- Fleet car: the corridor sedan, wheels turning ---- */}
+            {/* ---- Fleet car: the corridor sedan, specimen on the page ---- */}
             <div className="lx-hero-car">
-              <div className="lx-hero-car-scene">
-                <img
-                  src="/hero-sedan.png"
-                  alt="EHGA Mobility fleet sedan"
-                  width={619}
-                  height={221}
-                  className="lx-hero-car-body"
-                />
-                <img src="/wheel-rear.png" alt="" aria-hidden="true" className="lx-wheel lx-wheel--rear" />
-                <img src="/wheel-front.png" alt="" aria-hidden="true" className="lx-wheel lx-wheel--front" />
-              </div>
-              <div className="lx-hero-road" aria-hidden="true" />
+              <img
+                src="/hero-sedan.png"
+                alt="EHGA Mobility fleet sedan"
+                width={619}
+                height={221}
+                className="lx-hero-car-body"
+              />
               <p className="lx-hero-car-cap">
                 On the corridor — Koforidua <i>→</i> Accra · seats from <b>GHS 90</b> · tracked live
               </p>
