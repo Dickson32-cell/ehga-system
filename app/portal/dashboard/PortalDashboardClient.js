@@ -202,7 +202,7 @@ export default function PortalDashboardClient({ session }) {
                 <span className="badge code">{code}</span>
                 <span className={"badge " + (STATUS_BADGE[row.status] || "")}>{row.status}</span>
                 <span className="trip-date">
-                  {row.travel_date || row.booking_date || row.service_date || ""}
+                  {String(row.travel_date || row.booking_date || row.service_date || "").slice(0, 10)}
                   {row.departure_time ? " · " + row.departure_time : ""}
                 </span>
               </div>

@@ -11,6 +11,14 @@ const DIRECTIONS = [
   "Within Accra",
 ];
 
+// Ride-style fare rows — the same fares as the departure board on the home page.
+const ROUTE_META = {
+  "Koforidua to Accra": { fare: "GHS 90", times: "06:00 · 10:00 · 14:00" },
+  "Accra to Koforidua": { fare: "GHS 90", times: "07:00 · 11:00 · 15:00" },
+  "Within Koforidua": { fare: "GHS 15", times: "On demand" },
+  "Within Accra": { fare: "GHS 20", times: "On demand" },
+};
+
 export default function BookForm() {
   const [form, setForm] = useState({
     direction: DIRECTIONS[0],
@@ -130,13 +138,28 @@ export default function BookForm() {
       <div className="panel">
         <form onSubmit={submit}>
           <div className="form-grid">
-            <div className="field">
-              <label htmlFor="b-dir">Route *</label>
-              <select id="b-dir" value={form.direction} onChange={(e) => setForm({ ...form, direction: e.target.value })}>
-                {DIRECTIONS.map((d) => (
-                  <option key={d}>{d}</option>
-                ))}
-              </select>
+            <div className="field" style={{ gridColumn: "1 / -1" }}>
+              <label>Route *</label>
+              <div className="lx-route-pick" role="radiogroup" aria-label="Route">
+                {DIRECTIONS.map((d) => {
+                  const meta = ROUTE_META[d] || {};
+                  const on = form.direction === d;
+                  return (
+                    <button
+                      key={d}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      className={"lx-route-opt" + (on ? " on" : "")}
+                      onClick={() => setForm({ ...form, direction: d })}
+                    >
+                      <span className="lx-route-name">{d}</span>
+                      <span className="lx-route-times">{meta.times}</span>
+                      <span className="lx-route-fare">{meta.fare}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
             <div className="field">
               <label htmlFor="b-date">Travel date *</label>
@@ -159,16 +182,26 @@ export default function BookForm() {
               />
             </div>
             <div className="field">
-              <label htmlFor="b-seats">Seats *</label>
-              <input
-                id="b-seats"
-                type="number"
-                min={1}
-                max={6}
-                value={form.seats}
-                onChange={(e) => setForm({ ...form, seats: e.target.value })}
-                required
-              />
+              <label id="b-seats-label">Seats *</label>
+              <div className="lx-stepper" role="group" aria-labelledby="b-seats-label">
+                <button
+                  type="button"
+                  aria-label="One seat fewer"
+                  disabled={Number(form.seats) <= 1}
+                  onClick={() => setForm({ ...form, seats: Math.max(1, Number(form.seats) - 1) })}
+                >
+                  −
+                </button>
+                <span aria-live="polite">{form.seats}</span>
+                <button
+                  type="button"
+                  aria-label="One seat more"
+                  disabled={Number(form.seats) >= 6}
+                  onClick={() => setForm({ ...form, seats: Math.min(6, Number(form.seats) + 1) })}
+                >
+                  +
+                </button>
+              </div>
             </div>
             <div className="field">
               <label htmlFor="b-pick">Pickup point</label>

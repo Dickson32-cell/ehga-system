@@ -367,6 +367,57 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .lx-hero-car-cap i { color: var(--lx-gold); font-style: normal; padding: 0 0.15rem; }
 .lx-hero-car-cap b { color: var(--lx-ink); font-variant-numeric: tabular-nums; }
 
+/* ---- Ride-app patterns in LX skin (Uber/Bolt ergonomics, ink-on-paper look) ---- */
+
+/* Ride car strip: plate stamp + model, like a waybill */
+.lx-ridecar {
+  display: flex; align-items: center; gap: 0.7rem; margin: 0.7rem 0;
+  border: 1.5px solid var(--lx-ink); border-left: 5px solid var(--lx-gold);
+  background: #fdfcf7; padding: 0.5rem 0.7rem;
+}
+.lx-ridecar-plate {
+  font-family: system-ui, sans-serif; font-weight: 700; font-size: 0.95rem;
+  letter-spacing: 0.06em; border: 1.5px solid var(--lx-ink); padding: 0.15rem 0.5rem;
+  background: #fff; white-space: nowrap;
+}
+.lx-ridecar-meta { font-style: italic; color: var(--lx-ink-2); font-size: 0.92rem; }
+
+/* Route picker: tap-to-select fare rows instead of a dropdown */
+.lx-route-pick { display: grid; gap: 0; border: 1.5px solid var(--lx-ink); }
+.lx-route-opt {
+  display: grid; grid-template-columns: 1fr auto auto; align-items: baseline; gap: 0.8rem;
+  text-align: left; font: inherit; color: var(--lx-ink); background: #fbf9f2;
+  border: 0; border-bottom: 1px solid var(--lx-line-soft);
+  padding: 0.75rem 0.9rem; cursor: pointer;
+}
+.lx-route-opt:last-child { border-bottom: 0; }
+.lx-route-opt:hover { background: var(--lx-paper-2); }
+.lx-route-opt.on { background: var(--lx-green); color: #f4f1e8; }
+.lx-route-opt.on .lx-route-times { color: #cfe3d8; }
+.lx-route-opt.on .lx-route-fare { color: #f4f1e8; border-left-color: rgba(244, 241, 232, 0.5); }
+.lx-route-name { font-weight: 700; font-size: 0.98rem; }
+.lx-route-times { font-family: system-ui, sans-serif; font-size: 0.76rem; color: var(--lx-ink-3); }
+.lx-route-fare {
+  font-weight: 700; font-variant-numeric: tabular-nums;
+  border-left: 3px solid var(--lx-gold); padding-left: 0.6rem;
+}
+
+/* Passenger stepper: +/- like ride apps, square ink buttons */
+.lx-stepper {
+  display: inline-flex; align-items: stretch; border: 1.5px solid var(--lx-ink);
+}
+.lx-stepper button {
+  width: 46px; min-height: 44px; font-size: 1.3rem; font-weight: 700; line-height: 1;
+  background: #fbf9f2; color: var(--lx-ink); border: 0; cursor: pointer;
+}
+.lx-stepper button:hover:enabled { background: var(--lx-paper-2); }
+.lx-stepper button:disabled { color: var(--lx-ink-3); cursor: default; }
+.lx-stepper span {
+  min-width: 3.2rem; display: inline-flex; align-items: center; justify-content: center;
+  font-weight: 700; font-variant-numeric: tabular-nums; border-left: 1.5px solid var(--lx-ink);
+  border-right: 1.5px solid var(--lx-ink); font-size: 1.05rem;
+}
+
 /* Ledger rows */
 .lx-ledger { max-width: 1180px; margin: 0 auto; padding: 2.2rem 1.4rem 1rem; border-top: 2px solid var(--lx-line); }
 .lx-ledger-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.4rem; }
@@ -519,6 +570,11 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
   .lx-row-desc { grid-column: 2 / -1; font-size: 0.86rem; }
   .lx-mast-inner { padding: 0.7rem 0.9rem; }
   .lx-page { padding: 1.1rem 0.85rem 2.4rem; }
+
+  /* Ride patterns on phones: route rows wrap to two lines, plate strip stays readable */
+  .lx-route-opt { grid-template-columns: 1fr auto; row-gap: 0.15rem; padding: 0.7rem 0.75rem; }
+  .lx-route-times { grid-column: 1 / -1; }
+  .lx-ridecar { flex-wrap: wrap; gap: 0.4rem 0.6rem; }
 
   /* Login cards: full-width comfort */
   .login-wrap { padding: 1rem; align-items: flex-start; padding-top: 8vh; }

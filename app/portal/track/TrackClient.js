@@ -98,14 +98,17 @@ function TripCard({ row, focus, now }) {
       </div>
 
       {row.vehicle_model ? (
-        <p className="carline">
-          Vehicle {row.vehicle_model} · {row.vehicle_color} · <b>{row.vehicle_registration}</b>
-        </p>
+        <div className="lx-ridecar">
+          <span className="lx-ridecar-plate">{row.vehicle_registration}</span>
+          <span className="lx-ridecar-meta">
+            {row.vehicle_model} · {row.vehicle_color}
+          </span>
+        </div>
       ) : (
         <p className="hint">Car will appear here once assigned.</p>
       )}
 
-      {has ? (
+      {hasFix ? (
         <>
           <div className="mapwrap" style={{ height: 240 }}>
             <iframe
