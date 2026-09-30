@@ -1,6 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
+  other: { google: "notranslate" },
   title: "EHGA Mobility Operations",
   description:
     "EHGA Mobility staff operations system: bookings, dispatch, parcels, trips, fuel, fleet, private hire, school transport and cash reconciliation.",
