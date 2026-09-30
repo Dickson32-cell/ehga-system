@@ -36,7 +36,7 @@ export default async function AppLayout({ children }) {
           <LogoutButton />
         </div>
       </header>
-      <AppNav role={session.role} />
+      <AppNav role={session.role} fullName={session.full_name || session.username} />
       <main className="page">
         {session.must_change_password ? <ChangePassword required /> : null}
         {children}

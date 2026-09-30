@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useCallback } from "react";
 
 const LINKS = [
   { href: "/app", label: "Dashboard", roles: null },
@@ -26,11 +27,29 @@ const LINKS = [
 
 /**
  * Desktop/tablet: the usual horizontal strip.
- * Phone: links collapse into a slide-down menu behind a "Menu" button.
+ * Phone: hamburger opens a full-height slide-in drawer (Uber-driver style):
+ * account block up top (name + role), scrollable links, Sign out pinned at the foot.
  */
-export default function AppNav({ role }) {
+const ICON = {
+  burger: (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  ),
+  close: (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+  ),
+};
+
+export default function AppNav({ role, fullName }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
   const links = LINKS.filter((l) => !l.roles || l.roles.includes(role));
 
   // Close the drawer whenever the page changes or Escape is pressed.
@@ -41,6 +60,19 @@ export default function AppNav({ role }) {
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [open]);
+
+  // Lock body scroll while the drawer is open (it overlays the whole viewport).
+  useEffect(() => {
+    document.documentElement.classList.toggle("nav-locked", open);
+    return () => document.documentElement.classList.remove("nav-locked");
+  }, [open]);
+
+  const signOut = useCallback(async () => {
+    setBusy(true);
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.replace("/login");
+    router.refresh();
+  }, [router]);
 
   const current = links.find((l) => l.href === pathname);
 
@@ -54,16 +86,26 @@ export default function AppNav({ role }) {
           aria-expanded={open}
           onClick={() => setOpen((o) => !o)}
         >
-          <span className="mainnav-burger" aria-hidden="true">
-            <i /><i /><i />
-          </span>
+          {open ? ICON.close : ICON.burger}
           Menu
-          {current ? <span className="mainnav-current">{current.label}</span> : null}
+          {current && !open ? <span className="mainnav-current">{current.label}</span> : null}
         </button>
       </div>
 
-      {open ? (
-        <div className="mainnav-drawer">
+      {/* Phone drawer: scrim + panel */}
+      {open ? <div className="mainnav-scrim" onClick={() => setOpen(false)} /> : null}
+      <aside className={open ? "mainnav-side open" : "mainnav-side"} aria-hidden={!open}>
+        <div className="side-account">
+          <span className="side-avatar" aria-hidden="true">
+            {(fullName || "E").trim().charAt(0).toUpperCase()}
+          </span>
+          <span className="side-who">
+            <b>{fullName || "Signed in"}</b>
+            <i>{role.replace(/_/g, " ").toLowerCase()
+              .replace(/\b\w/g, (c) => c.toUpperCase())}</i>
+          </span>
+        </div>
+        <div className="side-scroll">
           {links.map((l) => (
             <Link
               key={l.href}
@@ -75,7 +117,12 @@ export default function AppNav({ role }) {
             </Link>
           ))}
         </div>
-      ) : null}
+        <div className="side-foot">
+          <button type="button" className="side-signout" onClick={signOut} disabled={busy}>
+            {busy ? "Signing out..." : "Sign out"}
+          </button>
+        </div>
+      </aside>
 
       {/* Tablet/desktop strip (unchanged behaviour) */}
       <div className="mainnav mainnav-strip">

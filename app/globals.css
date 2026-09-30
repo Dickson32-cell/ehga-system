@@ -642,8 +642,13 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ================= Staff app mobile ergonomics ================= */
 
-/* Nav wrapper: strip hidden on phones, drawer there instead */
+/* Shared mobile-nav primitives (staff drawer + portal sheet) */
+html.nav-locked, html.nav-locked body { overflow: hidden; }
+@keyframes lx-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Nav wrapper: strip hidden on phones, hamburger opens a full-height drawer there */
 .mainnav-mobile { display: none; }
+.mainnav-side { display: none; }
 @media (max-width: 640px) {
   .mainnav-strip { display: none; }
   .mainnav-mobile {
@@ -659,28 +664,63 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
     padding: 0.55rem 0.5rem; min-height: 44px; cursor: pointer;
     -webkit-tap-highlight-color: transparent;
   }
+  .mainnav-toggle svg { flex: none; }
   .mainnav-toggle:active { opacity: 0.75; }
   .mainnav-current {
     margin-left: auto; font-weight: 400; color: #b5af9f;
     max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .mainnav-burger { display: inline-flex; flex-direction: column; gap: 3.5px; }
-  .mainnav-burger i { width: 18px; height: 2px; background: #e7e3d6; border-radius: 1px; display: block; }
 
-  .mainnav-drawer {
+  /* Full-height slide-in drawer (Uber-driver style): scrim + left panel */
+  .mainnav-scrim {
+    position: fixed; inset: 0; background: rgba(23, 21, 15, 0.55);
+    z-index: 55; animation: lx-fade-in 0.2s ease;
+  }
+  .mainnav-side {
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; bottom: 0; left: 0;
+    width: min(19rem, 84vw);
     background: var(--ink);
-    padding: 0.2rem 0.5rem 0.7rem;
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
-    position: sticky; top: 53px; z-index: 38;
-    border-bottom: 3px solid #cfa96b;
+    z-index: 60;
+    transform: translateX(-102%);
+    transition: transform 0.25s ease;
+    padding-top: env(safe-area-inset-top);
+    border-right: 2px solid #2a2e33;
   }
-  .drawer-link {
-    color: #d8d5cf; font-family: system-ui, sans-serif; font-size: 0.9rem;
-    padding: 0.75rem 0.7rem; min-height: 44px; display: flex; align-items: center;
-    border-bottom: 1px solid #2a2e33; border-radius: 3px;
+  .mainnav-side.open { transform: translateX(0); box-shadow: 8px 0 24px rgba(23, 21, 15, 0.35); }
+  .side-account {
+    display: flex; align-items: center; gap: 0.7rem;
+    padding: 1rem 1rem 0.9rem;
+    border-bottom: 2px solid #2a2e33;
   }
-  .drawer-link:active { background: #2a2e33; }
-  .drawer-link.active { color: #fff; background: #2a2e33; box-shadow: inset 2px 0 0 #cfa96b; }
+  .side-avatar {
+    flex: none; width: 2.6rem; height: 2.6rem;
+    display: flex; align-items: center; justify-content: center;
+    background: #cfa96b; color: var(--ink);
+    font-family: Georgia, serif; font-size: 1.15rem; font-weight: 700;
+    border: 1px solid #a8814f;
+  }
+  .side-who { display: flex; flex-direction: column; min-width: 0; }
+  .side-who b { color: #f4f1e8; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .side-who i { color: #b5af9f; font-size: 0.78rem; font-style: normal; letter-spacing: 0.04em; text-transform: uppercase; }
+  .side-scroll { flex: 1; overflow-y: auto; padding: 0.3rem 0; }
+  .mainnav-side .drawer-link {
+    display: flex; align-items: center;
+    color: #d8d5cf; font-family: system-ui, sans-serif; font-size: 0.92rem;
+    padding: 0.8rem 1rem; min-height: 48px;
+    border-bottom: 1px solid #2a2e33; border-radius: 0;
+    text-decoration: none;
+  }
+  .mainnav-side .drawer-link:active { background: #2a2e33; }
+  .mainnav-side .drawer-link.active { color: #fff; background: #2a2e33; box-shadow: inset 3px 0 0 #cfa96b; }
+  .side-foot { border-top: 1px solid #2a2e33; padding: 0.5rem 1rem calc(0.6rem + env(safe-area-inset-bottom)); }
+  .side-signout {
+    width: 100%; min-height: 48px;
+    background: transparent; border: 1px solid #4a4438;
+    color: #e7e3d6; font-family: system-ui, sans-serif; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer;
+  }
+  .side-signout:active { background: #2a2e33; }
 }
 
 /* ---------- Tables become cards on phones ---------- */
@@ -764,7 +804,7 @@ input[type="date"] { padding-right: 2.4rem; }
 .badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .metric .m-result { overflow-wrap: anywhere; }
 .trip-card > * + * { margin-top: 0.45rem; }
-.mainnav-drawer { max-height: 70dvh; overflow-y: auto; }
+.mainnav-side .side-scroll { max-height: calc(100dvh - 12rem); overflow-y: auto; }
 .paybtn { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; max-width: 100%; }
 .paybtn .hint { max-width: 100%; overflow-wrap: anywhere; }
 .field { min-width: 0; }
@@ -816,48 +856,92 @@ input[type="date"] { padding-right: 2.4rem; }
 }
 .linklike:hover { color: var(--ink); }
 
-/* ================= Portal mobile nav (same ergonomics as staff app) ================= */
-.lx-tabs-mobile { display: none; }
+/* ================= Portal mobile nav (Uber-rider style) ================= */
+
+/* Phone-only surfaces; bottom bar + sheet live at the document level */
+.ptab-bar { display: none; }
+.ptab-sheet, .sheet-scrim { display: none; }
 
 @media (max-width: 640px) {
-  .lx-tabs-inner { display: none; }
+  /* Desktop tab strip is fully replaced by the bottom bar */
+  .lx-tabs { display: none; }
 
-  .lx-tabs-mobile {
-    display: block;
+  /* --- Bottom tab bar --- */
+  .ptab-bar {
+    display: flex;
+    position: fixed; left: 0; right: 0; bottom: 0;
     background: var(--lx-ink, #17150f);
-    padding: 0.35rem 0.6rem;
-    position: sticky; top: 0; z-index: 39;
+    border-top: 2px solid #2a2e33;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 50;
   }
-  .lx-tabs-toggle {
-    display: flex; align-items: center; gap: 0.6rem;
-    width: 100%; background: transparent; border: 0; color: #e7e3d6;
-    font-family: system-ui, sans-serif; font-size: 0.92rem; font-weight: 600;
-    padding: 0.55rem 0.5rem; min-height: 44px; cursor: pointer;
+  .ptab-bar { color: #b5af9f; }
+  .lx .ptab {
+    flex: 1; min-height: 56px; color: #b5af9f;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    background: transparent; border: 0; cursor: pointer;
+    color: #b5af9f; font-family: system-ui, sans-serif; font-size: 0.66rem; font-weight: 600;
+    padding: 0.4rem 0 0.45rem;
     -webkit-tap-highlight-color: transparent;
+    text-decoration: none;
+    box-shadow: inset 0 3px 0 transparent;
   }
-  .lx-tabs-toggle:active { opacity: 0.75; }
-  .lx-tabs-toggle .mainnav-current {
-    margin-left: auto; font-weight: 400; color: #b5af9f;
-    max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  .ptab svg { flex: none; }
+  .ptab:active { opacity: 0.75; }
+  .lx .ptab.active {
+    color: #f4f1e8;
+    box-shadow: inset 0 3px 0 var(--lx-gold, #b98a2f);
   }
 
-  .lx-tabs-drawer {
+  /* Page clears the tab bar */
+  .lx-page { padding-bottom: calc(5.2rem + env(safe-area-inset-bottom)); }
+  .lx-foot { padding-bottom: calc(4.6rem + env(safe-area-inset-bottom)); }
+
+  /* --- Bottom sheet behind "More" --- */
+  .sheet-scrim {
+    display: block;
+    position: fixed; inset: 0; background: rgba(23, 21, 15, 0.55);
+    z-index: 58; animation: lx-fade-in 0.2s ease;
+  }
+  .ptab-sheet {
+    display: flex; flex-direction: column;
+    position: fixed; left: 0; right: 0; bottom: 0;
     background: var(--lx-ink, #17150f);
-    padding: 0.2rem 0.5rem 0.7rem;
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 2px;
-    position: sticky; top: 53px; z-index: 38;
-    border-bottom: 3px solid var(--lx-gold, #b98a2f);
-    max-height: 70dvh; overflow-y: auto;
+    border-top: 2px solid var(--lx-gold, #b98a2f);
+    z-index: 59;
+    transform: translateY(105%);
+    transition: transform 0.25s ease;
+    padding: 0.3rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+    max-height: 72dvh; overflow-y: auto;
   }
-  .lx-tabs-drawer .drawer-link {
-    color: #d8d5cf; font-family: system-ui, sans-serif; font-size: 0.9rem;
-    padding: 0.75rem 0.7rem; min-height: 44px; display: flex; align-items: center;
-    border-bottom: 1px solid #2a2e33; border-radius: 3px; text-decoration: none;
+  .ptab-sheet.open { transform: translateY(0); }
+  .sheet-grab {
+    align-self: center; width: 3rem; height: 4px;
+    background: #4a4438; margin: 0.4rem 0 0.5rem;
   }
-  .lx-tabs-drawer .drawer-link:active { background: #2a2e33; }
-  .lx-tabs-drawer .drawer-link.active { color: #fff; background: #2a2e33; box-shadow: inset 2px 0 0 var(--lx-gold, #b98a2f); }
+  .lx .sheet-title {
+    color: #b5af9f; font-family: system-ui, sans-serif;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0 1.1rem 0.4rem;
+  }
+  .lx .sheet-row {
+    display: flex; align-items: center; gap: 0.8rem; color: #e7e3d6;
+    min-height: 52px; padding: 0.55rem 1.1rem;
+    color: #e7e3d6; font-family: system-ui, sans-serif; font-size: 0.95rem;
+    text-decoration: none;
+    border-top: 1px solid #2a2e33;
+    background: transparent; border-left: 0; border-right: 0; border-bottom: 0;
+    cursor: pointer;
+  }
+  .lx .sheet-row svg { flex: none; color: #b5af9f; }
+  .sheet-row:active { background: #2a2e33; }
+  .lx .sheet-row.active { color: #fff; background: #2a2e33; box-shadow: inset 3px 0 0 var(--lx-gold, #b98a2f); }
+  .sheet-row.active svg { color: var(--lx-gold, #b98a2f); }
+  .sheet-signout { color: #d99a5b; }
+}
 
-  /* Masthead: keep brand + user on one line but let user name truncate */
+/* Masthead: keep brand + user on one line but let user name truncate */
+@media (max-width: 640px) {
   .lx-mast-inner { gap: 0.5rem; }
   .lx-mast-user { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lx-as-btn { min-height: 44px; }
