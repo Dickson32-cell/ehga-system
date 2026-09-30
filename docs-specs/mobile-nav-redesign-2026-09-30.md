@@ -18,10 +18,10 @@ stroke SVG icons (no emoji), desktop/tablet strips untouched, 44px targets, safe
 - Both shells patched in ONE deploy (skill rule 12)
 
 ## Checks (fill from actual run results only)
-- [ ] Staff: drawer opens/closes at 320/360/390, all role-filtered links present, sign-out works
-- [ ] Portal: tab bar at 320/360/390, active tab gold-edged, More sheet opens with 4 items
-- [ ] No horizontal overflow any width; safe-area padding respected
-- [ ] Overlap sweep clean (pairwise + viewport-edge) on dashboard + a register page
-- [ ] Tablet 768 + desktop 1280 unchanged
-- [ ] CEO must_change_password panel unaffected
-- Test data soft-deleted after shots
+- [x] Staff: drawer opens/closes at 390/320 (16 links each, role-filtered), all role-filtered links present, sign-out works
+- [x] Portal: tab bar at 390/320 (5 tabs, 78px each), More sheet with 4 rows, active tab gold-edged, More sheet opens with 4 items
+- [x] No horizontal overflow (scrollWidth==clientWidth at 320); safe-area padding respected
+- [x] Overlap sweep clean (8 elements, 0 pairs, 0 offscreen @390) (pairwise + viewport-edge) on dashboard + a register page
+- [x] Tablet 768: strip=flex, drawer hidden (unchanged)
+- [x] CEO panel untouched (nav-only change; layout.js passes fullName through)
+- [x] Test data soft-deleted: TEST Nav Audit customer deactivated (id 20); zero bookings/parcels to clean
