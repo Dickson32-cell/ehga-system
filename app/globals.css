@@ -514,6 +514,42 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .login-wrap .mode-tabs { border-color: var(--lx-ink-2); border-radius: 0; }
 .login-wrap .mode-tabs button.active { background: var(--lx-green); }
 
+/* LX homepage additions: corridor line, proof strip, next-departure tag, footer routes */
+.lx-corridor {
+  max-width: 1180px; margin: 0 auto; width: 100%;
+  padding: 1.6rem 1.4rem 0.4rem; border-top: 2px solid var(--lx-line);
+}
+.lx-corridor-svg { display: block; width: 100%; max-width: 980px; height: auto; margin: 0 auto; }
+.lx-timecell { display: inline-flex; align-items: baseline; flex-wrap: wrap; gap: 0.15rem 0.35rem; }
+.lx-time-next { color: var(--lx-ink); font-weight: 700; border-bottom: 2px solid var(--lx-gold); padding-bottom: 1px; display: inline-flex; align-items: baseline; }
+.lx-time-tag {
+  font-family: system-ui, sans-serif; font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; background: var(--lx-gold); color: #fff;
+  padding: 0.06rem 0.32rem; margin-left: 0.35rem; white-space: nowrap;
+}
+.lx-foot-routes { display: block; margin-top: 0.3rem; color: #b5af9f; font-size: 0.82rem; line-height: 1.6; }
+.lx-foot-routes i { color: var(--lx-gold); font-style: normal; padding: 0 0.15rem; }
+@media (max-width: 900px) {
+  .lx-corridor { padding: 1.2rem 0.4rem 0.2rem; }
+  .lx-corridor-svg { max-width: 100%; }
+}
+.lx-corridor-m { display: none; }
+@media (max-width: 640px) {
+  /* Phone: SVG off, compact text route line instead — nothing shrinks below readable */
+  .lx-corridor-svg { display: none; }
+  .lx-corridor-m { display: block; border-left: 5px solid var(--lx-gold); background: #fbf9f2; padding: 0.75rem 0.9rem; }
+  .lx-corridor-m-route { font-weight: 700; font-size: 0.98rem; }
+  .lx-corridor-m-route i { color: var(--lx-gold); font-style: normal; padding: 0 0.15rem; }
+  .lx-corridor-m-route span { font-weight: 400; font-style: italic; color: var(--lx-ink-2); font-size: 0.88rem; }
+  .lx-corridor-m-times { margin-top: 0.25rem; font-size: 0.82rem; color: var(--lx-ink-2); line-height: 1.7; }
+  /* Board columns shrink as fractions (auto forced overflow at 390px) */
+  .lx-board-row { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 0.55fr); }
+  .lx-row { grid-template-columns: 2rem minmax(0, 1fr) auto; }
+  .lx-row-desc { grid-column: 2 / -1; }
+  .lx-foot-inner { align-items: flex-start; }
+  .lx-foot-routes { max-width: 100%; }
+}
+
 /* ================= Responsive tiers: phone / tablet / desktop ================= */
 /* Tier variables: touch targets grow on mobile, type scales per tier. */
 
