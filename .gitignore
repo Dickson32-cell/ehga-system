@@ -34,3 +34,5 @@ CREDENTIALS.txt
 
 .vercel
 .env*
+
+.lx-backup/
