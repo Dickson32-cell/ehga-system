@@ -32,8 +32,9 @@ function renderTimes(times, next) {
 
 export default async function PortalHome() {
   const session = await getCustomerSession();
-  // Ghana runs on UTC year-round: express "now" in UTC terms for schedule math.
-  const nowGha = new Date(Date.now() + new Date().getTimezoneOffset() * 60_000);
+  // Pass server wall-clock directly; nextDepartureFor uses UTC accessors
+  // (Ghana = UTC+0, no DST), so no offset juggling is needed.
+  const nowGha = new Date();
   const nextKofA = nextDepartureFor(DEPARTURES["Koforidua → Accra"], nowGha);
   const nextAKof = nextDepartureFor(DEPARTURES["Accra → Koforidua"], nowGha);
 
