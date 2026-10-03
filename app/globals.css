@@ -1279,7 +1279,8 @@ input[type="date"] { padding-right: 2.4rem; }
 .lx-page .trip-card { border-radius: 14px; border: 2px solid #efece4; border-left: 5px solid var(--lx-green); }
 
 /* ---- Login cards (staff + customer auth) ---- */
-.login-wrap { background: #fff; font-family: system-ui, sans-serif; }
+.login-wrap { background: #fff; font-family: system-ui, sans-serif; min-height: 100vh; }
+body:has(.login-wrap) { background: #fff; }
 .login-wrap .login-card {
   border: 0; border-top: 6px solid var(--fly-yellow); border-radius: 16px;
   background: #faf9f5; box-shadow: 0 12px 30px rgba(23, 21, 15, 0.12);
