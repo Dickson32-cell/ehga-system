@@ -13,6 +13,7 @@ export function middleware(request) {
     pathname === "/" ||
     pathname.startsWith("/portal") ||
     pathname.startsWith("/api/portal") ||
+    pathname.startsWith("/api/drivers") ||
     pathname.startsWith("/api/push") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/paystack") ||
