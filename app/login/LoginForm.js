@@ -8,13 +8,13 @@ import { useRouter } from "next/navigation";
  * (staff first, then customers) and routes to the right interface:
  *   staff    -> /app  (role-based dashboard)
  *   customer -> /portal/dashboard (own data only)
- * Neither side can reach the other's interface: sessions are separate
- * cookie types and every page/API re-verifies its own session server-side.
+ * Password is revealable (clients/individuals click the eye to see it).
  */
 export default function LoginForm() {
   const router = useRouter();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
 
@@ -32,13 +32,10 @@ export default function LoginForm() {
         body: JSON.stringify({ username: id, password }),
       });
       if (sRes.ok) {
-        const sj = await sRes.json().catch(() => ({}));
-        router.replace(sj?.user?.role === "MANAGING_DIRECTOR" ? "/app" : "/app");
+        router.replace("/app");
         router.refresh();
         return;
       }
-      // Only accept definitive "wrong credentials" as staff-miss; other
-      // errors (500 etc.) still let us try the customer path below.
       const staffMiss = sRes.status === 401 || sRes.status === 403 || sRes.status === 404;
 
       // 2) Customer attempt (phone number)
@@ -84,17 +81,27 @@ export default function LoginForm() {
       </div>
       <div className="field" style={{ marginBottom: "1rem" }}>
         <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+        <div className="pw-row">
+          <input
+            id="password"
+            name="password"
+            type={show ? "text" : "password"}
+            autoComplete="current-password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button
+            type="button"
+            className="pw-toggle"
+            onClick={() => setShow(!show)}
+            aria-label={show ? "Hide password" : "Show password"}
+          >
+            {show ? "Hide" : "Show"}
+          </button>
+        </div>
       </div>
-      <button className="btn" type="submit" disabled={busy} style={{ width: "100%" }}>
+      <button className="btn btn-solid" type="submit" disabled={busy} style={{ width: "100%" }}>
         {busy ? "Signing in..." : "Sign in"}
       </button>
     </form>

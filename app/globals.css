@@ -17,6 +17,14 @@
   --good-soft: #e5f0e6;
   --radius: 6px;
 }
+/* ---- PT tokens at :root so non-.pt surfaces (login, staff app) resolve them ---- */
+:root {
+  --fly-yellow: #e8bd0e;
+  --fly-ink: #17150f;
+  --fly-gray: #4a4f55;
+  --fly-gray-2: #8a8478;
+}
+
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1330,3 +1338,85 @@ body:has(.login-wrap) { background: #fff; }
   .lx-page .btn, .page .btn { min-height: 44px; }
   .login-wrap .field input { font-size: 16px; min-height: 44px; }
 }
+
+
+/* ================= Driver application + password helpers ================= */
+.pw-row { display: flex; gap: 0.4rem; align-items: stretch; }
+.pw-row input { flex: 1; }
+.pw-toggle {
+  font-family: system-ui, sans-serif; font-size: 0.78rem; font-weight: 700;
+  border: 1.5px solid #c9c6be; background: #fff; color: #4a4f55;
+  border-radius: 10px; padding: 0 0.8rem; cursor: pointer; white-space: nowrap;
+}
+.pw-toggle:hover { border-color: #17150f; color: #17150f; }
+
+.login-links { margin-top: 1.2rem; text-align: center; font-family: system-ui, sans-serif; font-size: 0.88rem; display: grid; gap: 0.45rem; }
+.login-links p { margin: 0; }
+.ll-strong { color: #0d5c3f; font-weight: 700; border-bottom: 1px solid #0d5c3f; padding-bottom: 1px; }
+.ll-faint { color: #8a8478; font-size: 0.8rem; }
+
+/* Driver apply multi-step */
+.driver-apply-card { max-width: 560px; }
+.da-steps { display: flex; align-items: center; gap: 0.55rem; margin: 0 0 1.2rem; }
+.da-step {
+  width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+  background: #eceae5; color: #8a8478; font-weight: 800; font-size: 0.74rem; flex: none;
+}
+.da-step.on { background: #e8bd0e; color: #17150f; }
+.da-step.done { background: #0d5c3f; color: #fff; }
+.da-steplabel { font-family: system-ui, sans-serif; font-size: 0.8rem; color: #4a4f55; margin-left: 0.2rem; }
+.da-pics { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.da-pic { position: relative; width: 86px; height: 64px; border: 1.5px solid #c9c6be; border-radius: 8px; overflow: hidden; }
+.da-pic img { width: 100%; height: 100%; object-fit: cover; }
+.da-pic button {
+  position: absolute; top: 2px; right: 2px; width: 18px; height: 18px; border-radius: 50%;
+  border: 0; background: rgba(23,21,15,0.75); color: #fff; font-size: 0.7rem; line-height: 1;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
+}
+.da-actions { display: flex; gap: 0.6rem; margin-top: 1.2rem; }
+.da-actions .btn { flex: 1; }
+.da-back { background: #fff; color: #17150f; border: 2px solid #17150f; }
+.da-review { border: 1.5px solid #e2e0da; border-radius: 12px; padding: 0.9rem 1rem; font-family: system-ui, sans-serif; }
+.da-review h3 { font-size: 0.95rem; margin-bottom: 0.6rem; }
+.da-rrow { display: flex; justify-content: space-between; gap: 1rem; font-size: 0.84rem; padding: 0.3rem 0; border-bottom: 1px solid #f0eee8; }
+.da-rrow:last-child { border-bottom: 0; }
+.da-rrow span { color: #8a8478; }
+.da-rrow b { text-align: right; overflow-wrap: anywhere; }
+.da-done { text-align: center; padding: 1rem 0 0.4rem; font-family: system-ui, sans-serif; }
+.da-done-badge {
+  width: 54px; height: 54px; margin: 0 auto 0.8rem; border-radius: 50%;
+  background: #0d5c3f; color: #fff; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+}
+.da-done h2 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+.da-done p { color: #4a4f55; font-size: 0.92rem; }
+.da-done-sub { color: #8a8478; font-size: 0.82rem; }
+.da-done-btn { display: inline-block; margin-top: 0.9rem; font-weight: 800; }
+@media (max-width: 640px) {
+  .pw-row input { font-size: 16px; min-height: 44px; }
+  .driver-apply-card { max-width: none; }
+}
+
+
+/* ================= Driver applications review panel (staff side) ================= */
+.da-app { border: 1.5px solid #efece4; border-radius: 12px; padding: 0.9rem 1rem; margin-top: 0.8rem; }
+.da-app-head { display: flex; justify-content: space-between; gap: 0.8rem; align-items: baseline; margin-bottom: 0.5rem; flex-wrap: wrap; }
+.da-app-head b { font-size: 1rem; }
+.da-app-head span { color: #4a4f55; font-variant-numeric: tabular-nums; }
+.da-app-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.4rem 1rem; font-family: system-ui, sans-serif; font-size: 0.8rem; }
+@media (max-width: 820px) { .da-app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.da-app-grid div { display: grid; }
+.da-app-grid span { color: #8a8478; font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.da-app-grid b { overflow-wrap: anywhere; }
+.da-app-grid i { color: #4a4f55; font-style: normal; }
+.da-docs { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.7rem; }
+.da-doc { position: relative; width: 108px; text-align: center; font-family: system-ui, sans-serif; font-size: 0.7rem; color: #4a4f55; }
+.da-doc img { width: 108px; height: 80px; object-fit: cover; border: 1.5px solid #c9c6be; border-radius: 8px; display: block; }
+.da-doc span { display: block; margin-top: 0.2rem; }
+.da-doc:hover img { border-color: #17150f; }
+.da-decide { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.da-decide input { flex: 1; min-width: 160px; font-family: system-ui, sans-serif; padding: 0.5rem 0.6rem; border: 1.5px solid #c9c6be; border-radius: 10px; }
+.da-app-row { display: flex; gap: 0.8rem; align-items: baseline; flex-wrap: wrap; font-family: system-ui, sans-serif; font-size: 0.84rem; padding: 0.4rem 0; border-bottom: 1px solid #f0eee8; }
+.da-app-row .ok { color: #1f6b34; font-weight: 700; font-style: normal; }
+.da-app-row .bad { color: #8f2229; font-weight: 700; font-style: normal; }
+.da-history { margin-top: 1rem; font-family: system-ui, sans-serif; }
+.da-history summary { cursor: pointer; font-size: 0.85rem; color: #4a4f55; }

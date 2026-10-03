@@ -21,12 +21,21 @@ export default async function LoginPage() {
           <p>Sign in</p>
         </div>
         <LoginForm />
-        <p style={{ margin: "1rem 0 0", fontSize: "0.86rem", textAlign: "center", fontFamily: "system-ui, sans-serif", color: "var(--ink-soft)" }}>
-          New customer?{" "}
-          <Link href="/portal/auth?mode=register" style={{ color: "var(--good)", fontWeight: 600 }}>
-            Sign up
-          </Link>
-        </p>
+        <div className="login-links">
+          <p>
+            <Link href="/portal/auth?mode=register" className="ll-strong">
+              Create customer account
+            </Link>
+          </p>
+          <p>
+            <Link href="/portal/driver-apply" className="ll-strong">
+              Drive with us — driver sign-up
+            </Link>
+          </p>
+          <p className="ll-faint">
+            Forgot your password? Call the office line to reset it.
+          </p>
+        </div>
       </div>
     </div>
   );

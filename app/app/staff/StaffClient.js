@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import DriverApplicationsPanel from "./DriverApplicationsPanel";
 
 const LABELS = {
   MANAGING_DIRECTOR: "Managing Director",
@@ -122,6 +123,8 @@ export default function StaffClient({ me, myRole }) {
 
       {error ? <div className="form-error">{error}</div> : null}
       {okMsg ? <div className="form-ok">{okMsg}</div> : null}
+
+      <DriverApplicationsPanel myRole={myRole} />
 
       <div className="panel">
         <h2>{isCEO ? "Add staff member" : "Add driver or rider"}</h2>
